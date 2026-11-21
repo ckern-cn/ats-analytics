@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest a small, well-scoped improvement
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and compatibility
+      description: Does it change the API, schema, tracking script, i18n keys or deployment?
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and documentation
+          required: true
+        - label: This does not require a paid tier or feature gate
+          required: true

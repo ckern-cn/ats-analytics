@@ -1,0 +1,24 @@
+ATS
+Copyright (c) 2026 ywliu
+
+The source code in this repository is licensed under the MIT License; see
+LICENSE.
+
+The following are project brand assets and are NOT licensed under the MIT
+License:
+
+  - the official "ATS" project identity and visual design;
+  - public/res/icon.svg
+  - public/res/icon-mark.svg
+  - public/res/app-icon.png
+  - public/res/app-icon-180.png
+  - public/favicon.ico
+  - the official domain ats.ckern.cn;
+  - official release artifacts published by the maintainer.
+
+Forks are welcome under the MIT License, but must use a different project name
+and visual identity, must not use the official domain, and must not imply
+endorsement or official status. See TRADEMARK.md for the full policy.
+
+Third-party components and data are listed in THIRD_PARTY_NOTICES.md. The
+flag SVGs, Kore, cJSON and js-sha256 remain under their own licenses.
