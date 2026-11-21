@@ -55,6 +55,21 @@ check "dashboard without cookie" 302 "$(code -o /dev/null "$BASE/dv")"
 check "bad password" 401 "$(code -X POST "$BASE/do_login" \
 	--data-urlencode "username=$USER" --data-urlencode "password=nope")"
 check "dashboard with cookie" 200 "$(code -b "$JAR" "$BASE/dv")"
+
+say "== i18n =="
+ENPAGE=$(curl -s -H 'Accept-Language: en-US' "$BASE/login")
+printf '%s' "$ENPAGE" | grep -q 'User name' && ok "Accept-Language en" || fail "Accept-Language en"
+ZHPAGE=$(curl -s -H 'Accept-Language: zh-CN' "$BASE/login")
+printf '%s' "$ZHPAGE" | grep -q '用户名' && ok "Accept-Language zh-CN" || fail "Accept-Language zh-CN"
+LANGJAR=$TMP/lang-cookies.txt
+check "switch to English" 303 "$(code -c "$LANGJAR" "$BASE/lang/en?ref=/login")"
+ENPAGE2=$(curl -s -b "$LANGJAR" "$BASE/login")
+printf '%s' "$ENPAGE2" | grep -q 'User name' && ok "en cookie" || fail "en cookie"
+check "invalid language" 404 "$(code "$BASE/lang/xx")"
+check "switch to Chinese" 303 "$(code -b "$LANGJAR" -c "$LANGJAR" "$BASE/lang/zh-CN?ref=/login")"
+ZHPAGE2=$(curl -s -b "$LANGJAR" "$BASE/login")
+printf '%s' "$ZHPAGE2" | grep -q '用户名' && ok "zh cookie" || fail "zh cookie"
+
 check "cross-origin create rejected" 403 "$(code -b "$JAR" \
 	-H 'Origin: https://evil.example' -X POST "$BASE/do_create" \
 	--data-urlencode "app_name=csrf-$NAME" \
@@ -123,6 +138,18 @@ if grep -q "\"'=cmd" "$TMP/body"; then
 else
 	fail "csv formula not escaped"
 fi
+
+say "== i18n dashboard =="
+check "switch to English again" 303 "$(code -b "$LANGJAR" -c "$LANGJAR" "$BASE/lang/en?ref=/login")"
+check "login en" 303 "$(code -b "$LANGJAR" -c "$LANGJAR" -H "Origin: $BASE" \
+	-X POST "$BASE/do_login" \
+	--data-urlencode "username=$USER" \
+	--data-urlencode "password=$HASH" \
+	--data-urlencode "ref=/dv")"
+ENDASH=$(curl -s -b "$LANGJAR" "$BASE/dv/$ID")
+printf '%s' "$ENDASH" | grep -q 'Visitors' && ok "en dashboard" || fail "en dashboard"
+ENCSV=$(curl -s -b "$LANGJAR" "$BASE/export/$ID")
+printf '%s' "$ENCSV" | grep -q 'visit_date_utc' && ok "en csv header" || fail "en csv header"
 
 say "== cleanup =="
 check "delete" 303 "$(code -b "$JAR" -X POST "$BASE/do_delete" \

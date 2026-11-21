@@ -4,7 +4,7 @@
 
 一个轻量的自托管流量统计工具：单二进制、SQLite、无外部运行时依赖。包含
 埋点脚本、PV / 访客统计、来源 / 页面 / 国家排行、14 天趋势和管理后台。
-管理界面、登录页、PV 徽章和 CSV 表头均为简体中文。
+默认界面语言为简体中文，支持英文；语言包可扩展。
 
 示例部署：<https://ats.ckern.cn>（域名、证书和 nginx 配置可按自己的环境替换）。
 
@@ -17,6 +17,8 @@
 - **看板**：访客数、PV、今日 / 昨日 / 7 天 / 30 天、14 天趋势、热门页面、
   来源、国家/地区、最近访问明细、CSV 导出（中文表头，带 UTF-8 BOM）。
 - **多应用**：一个后台管理多个站点，每个应用支持最多 3 个域名。
+- **多语言**：`zh-CN` / `en`，支持 Accept-Language、Cookie 和 `/lang/<code>` 切换；
+  CSV 和 PV 徽章跟随请求语言。
 - **隐私选项**：可隐藏 IP 末段、尊重 DNT、使用带密钥的访客标识。
 - **安全**：参数化 SQL、HTML/JS 转义、JWT 会话、CSRF Origin 校验、
   埋点回填 HMAC 签名、登录限流、systemd 沙箱、loopback 后端。
@@ -29,6 +31,8 @@ ats-c/                  C 服务（Kore app，目录名必须是 ats-c）
   src/                  源码
   conf/                 Kore 配置和构建配置
   vendor/kore-4.2.3/    vendored Kore
+  src/i18n.c           语言协商与翻译入口
+  src/lang/*.h         zh-CN / en 语言包
   Makefile
 db/schema.sql           SQLite schema（构建时嵌入二进制）
 deploy/                 systemd / nginx / cron / 安装脚本
@@ -115,12 +119,46 @@ tools/http-fuzz-smoke.sh http://127.0.0.1:3001
 | `ATS_TZ_OFFSET_MIN` | `480` | 展示和按天分桶的本地时区偏移（分钟） |
 | `ATS_SESSION_SECONDS` | `43200` | 会话有效期（秒） |
 | `ATS_RETENTION_DAYS` | `365` | 维护脚本清理多少天前的明细 |
+| `ATS_DEFAULT_LOCALE` | `zh-CN` | 默认语言；支持 `zh-CN`、`en` |
 | `ATS_ANONYMIZE_IP` | `0` | 设为 `1` 时 IPv4 抹掉最后一段、IPv6 抹掉接口标识后再入库 |
 | `ATS_RESPECT_DNT` | `1` | 设为 `1` 时忽略带 `DNT: 1` 的浏览器；设为 `0` 可关闭 |
 | `ATS_DB_PATH` | `<root>/data/ats.db` | SQLite 路径 |
 | `ATS_GEOIP_DB_PATH` | `<root>/data/GeoLite2-Country.mmdb` | GeoIP 库路径 |
 
 未设置 `ATS_ADMIN_PASSWORD` / `ATS_ADMIN_PASSWORD_SHA256` 时登录会关闭并打印警告。
+
+## 多语言
+
+支持的语言：
+
+- `zh-CN`：简体中文（默认）
+- `en`：English
+
+语言选择顺序：
+
+1. URL 参数 `?lang=en`（主要用于 PV 徽章）
+2. Cookie `ats_lang`（登录页/顶栏切换后写入）
+3. 浏览器 `Accept-Language`
+4. `ATS_DEFAULT_LOCALE`
+
+界面右上角和登录页有语言切换：
+
+```text
+/lang/zh-CN?ref=/dv
+/lang/en?ref=/dv
+```
+
+`/lang/<code>` 只接受受支持的语言代码，并校验 `ref` 必须是站内路径，避免开放重定向。
+
+CSV 表头和 PV 徽章文案跟随当前请求语言；埋点返回的隐藏调试信息保持英文，避免影响脚本兼容性。
+
+新增语言只需：
+
+1. 复制 `ats-c/src/lang/en.h` 为 `ats-c/src/lang/xx.h` 并翻译；
+2. 在 `i18n.h` 的 `enum ats_locale` 增加语言；
+3. 在 `i18n.c` 的 `catalogs`、`locale_codes`、`locale_names` 增加条目；
+4. 在 `ats_locale_from_code` 增加匹配规则；
+5. `make` 重新构建。
 
 ## 部署
 

@@ -27,6 +27,7 @@
 #include "db.h"
 #include "geoip.h"
 #include "handlers.h"
+#include "i18n.h"
 #include "jwt.h"
 #include "snowflake.h"
 #include "throttle.h"
@@ -76,8 +77,9 @@ static int	 canonical_app_id(const char *, const char *, size_t,
 static void	 visit_time_local(const char *, char *, size_t);
 static int	 load_top(const char *, const struct ats_val *, int,
 		    struct ats_top_item *, char labels[][512], int);
-static void	 send_error(struct http_request *, int, const char *,
-		    const char *);
+static void	 send_error(struct http_request *, enum ats_locale, int,
+		    const char *, const char *);
+static void	 set_locale_header(struct http_request *, enum ats_locale);
 static int	 constant_time_eq(const char *, const char *);
 
 static int
@@ -888,13 +890,20 @@ load_top(const char *sql, const struct ats_val *vals, int nvals,
 }
 
 static void
-send_error(struct http_request *req, int status, const char *title,
-    const char *message)
+set_locale_header(struct http_request *req, enum ats_locale locale)
+{
+	http_response_header(req, "content-language", ats_locale_code(locale));
+}
+
+static void
+send_error(struct http_request *req, enum ats_locale locale, int status,
+    const char *title, const char *message)
 {
 	struct ats_sb	sb;
 
 	ats_sb_init(&sb);
-	view_error(&sb, status, title, message);
+	view_error(&sb, locale, status, title, message);
+	 set_locale_header(req, locale);
 	http_response_header(req, "content-type", "text/html; charset=UTF-8");
 	http_response_header(req, "cache-control", "no-store");
 	http_response_header(req, "x-content-type-options", "nosniff");
@@ -1003,6 +1012,10 @@ ats_h_wru(struct http_request *req)
 int
 ats_h_rv(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	char		 err[256], host[MAX_HOST], ip[64], stored_ip[64], visit[32];
 	char		 unique[65], hosts[ATS_MAX_HOSTS][MAX_HOST];
 	char		 idbuf[32], wtoken[33];
@@ -1030,7 +1043,7 @@ ats_h_rv(struct http_request *req)
 	if (is_error != 0) {
 		kore_free(api);
 		kore_free(app_id);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1059,7 +1072,7 @@ ats_h_rv(struct http_request *req)
 		kore_log(LOG_ERR, "rv.js host lookup: %s", err);
 		kore_free(api);
 		kore_free(app_id);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1184,6 +1197,10 @@ ats_h_rv(struct http_request *req)
 int
 ats_h_pv(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	char			err[256];
 	char			*container, *num_s, *app_id;
 	char			*countries[5];
@@ -1229,7 +1246,7 @@ ats_h_pv(struct http_request *req)
 		kore_free(container);
 		kore_free(num_s);
 		kore_free(app_id);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1252,7 +1269,7 @@ ats_h_pv(struct http_request *req)
 		kore_free(container);
 		kore_free(num_s);
 		kore_free(app_id);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1270,7 +1287,7 @@ ats_h_pv(struct http_request *req)
 		kore_free(container);
 		kore_free(num_s);
 		kore_free(app_id);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1294,7 +1311,7 @@ ats_h_pv(struct http_request *req)
 	}
 
 	ats_sb_init(&sb);
-	view_js_res_pv(&sb, container, pv_total, rows, n,
+	view_js_res_pv(&sb, locale, container, pv_total, rows, n,
 	    pv_total > sum ? pv_total - sum : 0);
 	ats_db_finish(stmt);
 	ats_send_js(req, &sb);
@@ -1313,6 +1330,10 @@ ats_h_pv(struct http_request *req)
 int
 ats_h_dv(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	char			 err[256], tmp[32], app_id[32], first_id[32];
 	char			 ts_today[32], ts_yesterday[32], ts_7[32];
 	char			 ts_30[32], mod[32];
@@ -1585,14 +1606,14 @@ ats_h_dv(struct http_request *req)
 	dash.page_count = (int)page_count;
 
 	ats_sb_init(&sb);
-	view_data_view(&sb, req, &dash);
+	view_data_view(&sb, req, locale, &dash);
 	ats_send_html(req, &sb);
 	ats_sb_free(&sb);
 
 done:
 	if (bad != 0) {
 		kore_log(LOG_ERR, "dv: %s", err);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 	}
 
 	for (i = 0; i < n_apps; i++) {
@@ -1610,10 +1631,14 @@ done:
 int
 ats_h_create(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	struct ats_sb	sb;
 
 	ats_sb_init(&sb);
-	view_app_form(&sb, "新建应用", "/do_create", "", "", "", "", "");
+	view_app_form(&sb, req, locale, ats_i18n(locale, I18N_APP_NEW_TITLE), "/do_create", "", "", "", "", "");
 	ats_send_html(req, &sb);
 	ats_sb_free(&sb);
 
@@ -1621,7 +1646,8 @@ ats_h_create(struct http_request *req)
 }
 
 static int
-parse_app_form(struct http_request *req, char *name, size_t name_len,
+parse_app_form(struct http_request *req, enum ats_locale locale,
+    char *name, size_t name_len,
     char hosts[ATS_MAX_HOSTS][MAX_HOST], int *n_hosts, char *remark,
     size_t remark_len, char *host_input, size_t host_input_len,
     char *error, size_t error_len)
@@ -1636,7 +1662,8 @@ parse_app_form(struct http_request *req, char *name, size_t name_len,
 	body = read_body(req, &blen);
 	if (body == NULL || !is_form_request(req)) {
 		kore_free(body);
-		(void)snprintf(error, error_len, "表单提交无效。");
+		(void)snprintf(error, error_len, "%s",
+		    ats_i18n(locale, I18N_ERR_FORM));
 		return (-1);
 	}
 
@@ -1647,13 +1674,14 @@ parse_app_form(struct http_request *req, char *name, size_t name_len,
 	kore_free(body);
 
 	if (php_empty(name)) {
-		(void)snprintf(error, error_len, "请填写应用名称。");
+		(void)snprintf(error, error_len, "%s",
+		    ats_i18n(locale, I18N_ERR_APP_NAME));
 		return (-1);
 	}
 
 	if (normalize_hosts(host_input, hosts, n_hosts) == -1) {
-		(void)snprintf(error, error_len,
-		    "请输入 1-3 个有效域名，例如 example.com。");
+		(void)snprintf(error, error_len, "%s",
+		    ats_i18n(locale, I18N_ERR_HOSTS_EXAMPLE));
 		return (-1);
 	}
 
@@ -1663,9 +1691,12 @@ parse_app_form(struct http_request *req, char *name, size_t name_len,
 int
 ats_h_do_create(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	if (same_origin(req) == -1) {
-		send_error(req, 403, "禁止访问",
-		    "跨站请求被拒绝。");
+		send_error(req, locale, 403, ats_i18n(locale, I18N_ERR_TITLE_FORBIDDEN), ats_i18n(locale, I18N_ERR_MSG_ORIGIN));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1682,11 +1713,11 @@ ats_h_do_create(struct http_request *req)
 	name[0] = '\0';
 	remark[0] = '\0';
 
-	if (parse_app_form(req, name, sizeof(name), hosts, &n_hosts, remark,
+	if (parse_app_form(req, locale, name, sizeof(name), hosts, &n_hosts, remark,
 	    sizeof(remark), host_input, sizeof(host_input), error,
 	    sizeof(error)) == -1) {
 		ats_sb_init(&sb);
-		view_app_form(&sb, "新建应用", "/do_create", "", name, host_input,
+		view_app_form(&sb, req, locale, ats_i18n(locale, I18N_APP_NEW_TITLE), "/do_create", "", name, host_input,
 		    remark, error);
 		http_response_header(req, "content-type",
 		    "text/html; charset=UTF-8");
@@ -1699,14 +1730,13 @@ ats_h_do_create(struct http_request *req)
 	for (i = 0; i < n_hosts; i++) {
 		r = host_taken("0", hosts[i], err, sizeof(err));
 		if (r == -1) {
-			send_error(req, 500, "服务器错误",
-			    "数据库暂时不可用。");
+			send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 			return (KORE_RESULT_OK);
 		}
 		if (r == 1) {
 			ats_sb_init(&sb);
-			view_app_form(&sb, "新建应用", "/do_create", "", name,
-			    "", remark, "该域名已被其他应用使用。");
+			view_app_form(&sb, req, locale, ats_i18n(locale, I18N_APP_NEW_TITLE), "/do_create", "", name,
+			    "", remark, ats_i18n(locale, I18N_ERR_HOST_TAKEN));
 			http_response_header(req, "content-type",
 			    "text/html; charset=UTF-8");
 			http_response_header(req, "cache-control", "no-store");
@@ -1732,13 +1762,12 @@ ats_h_do_create(struct http_request *req)
 	    vals, 7, err, sizeof(err)) == KORE_RESULT_ERROR) {
 		kore_log(LOG_ERR, "do_create insert(%llu): %s",
 		    (unsigned long long)id, err);
-		send_error(req, 500, "服务器错误",
-		    "创建应用失败。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_CREATE_APP));
 		return (KORE_RESULT_OK);
 	}
 
 	ats_sb_init(&sb);
-	view_create_success(&sb, id, name, hosts[0]);
+	view_create_success(&sb, req, locale, id, name, hosts[0]);
 	ats_send_html(req, &sb);
 	ats_sb_free(&sb);
 
@@ -1748,6 +1777,10 @@ ats_h_do_create(struct http_request *req)
 int
 ats_h_edit(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	char		*id, name[256], hosts[768], remark[512], err[256];
 	struct ats_sb	 sb;
 
@@ -1757,13 +1790,12 @@ ats_h_edit(struct http_request *req)
 
 		if (app_exists(id, &exists, err, sizeof(err)) == -1) {
 			kore_free(id);
-			send_error(req, 500, "服务器错误",
-			    "数据库暂时不可用。");
+			send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 			return (KORE_RESULT_OK);
 		}
 		if (!exists) {
 			kore_free(id);
-			send_error(req, 404, "未找到", "该应用不存在。");
+			send_error(req, locale, 404, ats_i18n(locale, I18N_ERR_TITLE_NOT_FOUND), ats_i18n(locale, I18N_ERR_APP_NOT_FOUND));
 			return (KORE_RESULT_OK);
 		}
 	}
@@ -1771,12 +1803,12 @@ ats_h_edit(struct http_request *req)
 	if (app_get(id, name, sizeof(name), hosts, sizeof(hosts), remark,
 	    sizeof(remark), err, sizeof(err)) == -1) {
 		kore_free(id);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 		return (KORE_RESULT_OK);
 	}
 
 	ats_sb_init(&sb);
-	view_app_form(&sb, "编辑应用", "/do_update", id, name,
+	view_app_form(&sb, req, locale, ats_i18n(locale, I18N_APP_EDIT_TITLE), "/do_update", id, name,
 	    hosts, remark, "");
 	ats_send_html(req, &sb);
 	ats_sb_free(&sb);
@@ -1788,9 +1820,12 @@ ats_h_edit(struct http_request *req)
 int
 ats_h_do_update(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	if (same_origin(req) == -1) {
-		send_error(req, 403, "禁止访问",
-		    "跨站请求被拒绝。");
+		send_error(req, locale, 403, ats_i18n(locale, I18N_ERR_TITLE_FORBIDDEN), ats_i18n(locale, I18N_ERR_MSG_ORIGIN));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1812,7 +1847,7 @@ ats_h_do_update(struct http_request *req)
 	body = read_body(req, &blen);
 	if (body == NULL || !is_form_request(req)) {
 		kore_free(body);
-		send_error(req, 400, "请求无效", "表单提交无效。");
+		send_error(req, locale, 400, ats_i18n(locale, I18N_ERR_TITLE_BAD_REQUEST), ats_i18n(locale, I18N_ERR_FORM));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1824,31 +1859,31 @@ ats_h_do_update(struct http_request *req)
 	kore_free(body);
 
 	if (php_empty(id)) {
-		send_error(req, 400, "请求无效", "缺少应用 ID。");
+		send_error(req, locale, 400, ats_i18n(locale, I18N_ERR_TITLE_BAD_REQUEST), ats_i18n(locale, I18N_ERR_MISSING_ID));
 		return (KORE_RESULT_OK);
 	}
 
 	if (php_empty(name)) {
-		(void)snprintf(error, sizeof(error), "请填写应用名称。");
+		(void)snprintf(error, sizeof(error), "%s",
+		    ats_i18n(locale, I18N_ERR_APP_NAME));
 		goto invalid;
 	}
 
 	if (normalize_hosts(host_input, hosts, &n_hosts) == -1) {
-		(void)snprintf(error, sizeof(error),
-		    "请输入 1-3 个有效域名。");
+		(void)snprintf(error, sizeof(error), "%s",
+		    ats_i18n(locale, I18N_ERR_HOSTS));
 		goto invalid;
 	}
 
 	for (i = 0; i < n_hosts; i++) {
 		r = host_taken(id, hosts[i], err, sizeof(err));
 		if (r == -1) {
-			send_error(req, 500, "服务器错误",
-			    "数据库暂时不可用。");
+			send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 			return (KORE_RESULT_OK);
 		}
 		if (r == 1) {
 			(void)snprintf(error, sizeof(error),
-			    "域名 %.128s 已被其他应用使用。",
+			    ats_i18n(locale, I18N_ERR_HOST_TAKEN_FMT),
 			    hosts[i]);
 			goto invalid;
 		}
@@ -1865,7 +1900,7 @@ ats_h_do_update(struct http_request *req)
 	    "host_url_01 = ?, host_url_02 = ?, remark = ? WHERE id = ?",
 	    vals, 6, err, sizeof(err)) == KORE_RESULT_ERROR) {
 		kore_log(LOG_ERR, "do_update(%s): %s", id, err);
-		send_error(req, 500, "服务器错误", "更新应用失败。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_UPDATE_APP));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1883,7 +1918,7 @@ ats_h_do_update(struct http_request *req)
 
 invalid:
 	ats_sb_init(&sb);
-	view_app_form(&sb, "编辑应用", "/do_update", id, name, host_input,
+	view_app_form(&sb, req, locale, ats_i18n(locale, I18N_APP_EDIT_TITLE), "/do_update", id, name, host_input,
 	    remark, error);
 	http_response_header(req, "content-type", "text/html; charset=UTF-8");
 	http_response_header(req, "cache-control", "no-store");
@@ -1896,9 +1931,12 @@ invalid:
 int
 ats_h_do_delete(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	if (same_origin(req) == -1) {
-		send_error(req, 403, "禁止访问",
-		    "跨站请求被拒绝。");
+		send_error(req, locale, 403, ats_i18n(locale, I18N_ERR_TITLE_FORBIDDEN), ats_i18n(locale, I18N_ERR_MSG_ORIGIN));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1909,7 +1947,7 @@ ats_h_do_delete(struct http_request *req)
 	body = read_body(req, &blen);
 	if (body == NULL || !is_form_request(req)) {
 		kore_free(body);
-		send_error(req, 400, "请求无效", "表单提交无效。");
+		send_error(req, locale, 400, ats_i18n(locale, I18N_ERR_TITLE_BAD_REQUEST), ats_i18n(locale, I18N_ERR_FORM));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1920,7 +1958,7 @@ ats_h_do_delete(struct http_request *req)
 	if (strcmp(confirm, "yes") != 0 || php_empty(id)) {
 		kore_free(id);
 		kore_free(confirm);
-		send_error(req, 400, "请求无效", "需要确认删除。");
+		send_error(req, locale, 400, ats_i18n(locale, I18N_ERR_TITLE_BAD_REQUEST), ats_i18n(locale, I18N_ERR_CONFIRM));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1944,6 +1982,10 @@ ats_h_do_delete(struct http_request *req)
 int
 ats_h_login(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	char		ref[QV_LEN];
 	struct ats_sb	sb;
 
@@ -1951,7 +1993,7 @@ ats_h_login(struct http_request *req)
 	(void)ats_query_get(req, "ref", ref, sizeof(ref));
 
 	ats_sb_init(&sb);
-	view_login(&sb, ref, "");
+	view_login(&sb, locale, ref, "");
 	ats_send_html(req, &sb);
 	ats_sb_free(&sb);
 
@@ -1961,9 +2003,12 @@ ats_h_login(struct http_request *req)
 int
 ats_h_do_login(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	if (same_origin(req) == -1) {
-		send_error(req, 403, "禁止访问",
-		    "跨站请求被拒绝。");
+		send_error(req, locale, 403, ats_i18n(locale, I18N_ERR_TITLE_FORBIDDEN), ats_i18n(locale, I18N_ERR_MSG_ORIGIN));
 		return (KORE_RESULT_OK);
 	}
 
@@ -1992,7 +2037,7 @@ ats_h_do_login(struct http_request *req)
 			if (root != NULL)
 				cJSON_Delete(root);
 			kore_free(body);
-			send_error(req, 400, "请求无效", "JSON 格式错误。");
+			send_error(req, locale, 400, ats_i18n(locale, I18N_ERR_TITLE_BAD_REQUEST), ats_i18n(locale, I18N_ERR_MSG_BAD_JSON));
 			return (KORE_RESULT_OK);
 		}
 
@@ -2001,8 +2046,7 @@ ats_h_do_login(struct http_request *req)
 		    json_scalar(root, "ref", jref, sizeof(jref), 1) == -1) {
 			cJSON_Delete(root);
 			kore_free(body);
-			send_error(req, 400, "请求无效",
-			    "请输入用户名和密码。");
+			send_error(req, locale, 400, ats_i18n(locale, I18N_ERR_TITLE_BAD_REQUEST), ats_i18n(locale, I18N_ERR_MSG_CREDENTIALS_REQUIRED));
 			return (KORE_RESULT_OK);
 		}
 		cJSON_Delete(root);
@@ -2022,8 +2066,7 @@ ats_h_do_login(struct http_request *req)
 		kore_free(user);
 		kore_free(pwd);
 		kore_free(ref);
-		send_error(req, 503, "登录已关闭",
-		    "请设置 ATS_ADMIN_PASSWORD 或 ATS_ADMIN_PASSWORD_SHA256。");
+		send_error(req, locale, 503, ats_i18n(locale, I18N_ERR_LOGIN_DISABLED_TITLE), ats_i18n(locale, I18N_ERR_LOGIN_DISABLED_MSG));
 		return (KORE_RESULT_OK);
 	}
 
@@ -2032,7 +2075,7 @@ ats_h_do_login(struct http_request *req)
 	    LOGIN_RATE_PERIOD)) {
 		kore_log(LOG_WARNING, "login throttled for %s", ip);
 		ats_sb_init(&sb);
-		view_login(&sb, ref, "尝试次数过多，请稍后再试。");
+		view_login(&sb, locale, ref, ats_i18n(locale, I18N_ERR_TOO_MANY));
 		http_response_header(req, "content-type",
 		    "text/html; charset=UTF-8");
 		http_response_header(req, "cache-control", "no-store");
@@ -2050,7 +2093,7 @@ ats_h_do_login(struct http_request *req)
 	if (!ok) {
 		kore_log(LOG_WARNING, "login failed for %s from %s", user, ip);
 		ats_sb_init(&sb);
-		view_login(&sb, ref, "用户名或密码错误。");
+		view_login(&sb, locale, ref, ats_i18n(locale, I18N_ERR_BAD_CREDENTIALS));
 		http_response_header(req, "content-type",
 		    "text/html; charset=UTF-8");
 		http_response_header(req, "cache-control", "no-store");
@@ -2069,7 +2112,7 @@ ats_h_do_login(struct http_request *req)
 		kore_free(user);
 		kore_free(pwd);
 		kore_free(ref);
-		send_error(req, 500, "服务器错误", "无法创建会话。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_SESSION));
 		return (KORE_RESULT_OK);
 	}
 
@@ -2132,6 +2175,10 @@ sb_csv_field(struct ats_sb *sb, const char *s)
 int
 ats_h_export(struct http_request *req)
 {
+	enum ats_locale locale = ats_locale_for_request(req);
+
+	set_locale_header(req, locale);
+
 	char		 err[256], header[256];
 	char		*app_id;
 	struct ats_sb	 sb;
@@ -2142,7 +2189,7 @@ ats_h_export(struct http_request *req)
 	if (app_exists(app_id, &exists, err, sizeof(err)) == -1 ||
 	    !exists) {
 		kore_free(app_id);
-		send_error(req, 404, "未找到", "该应用不存在。");
+		send_error(req, locale, 404, ats_i18n(locale, I18N_ERR_TITLE_NOT_FOUND), ats_i18n(locale, I18N_ERR_APP_NOT_FOUND));
 		return (KORE_RESULT_OK);
 	}
 
@@ -2153,14 +2200,14 @@ ats_h_export(struct http_request *req)
 	    sizeof(err)) == KORE_RESULT_ERROR) {
 		kore_log(LOG_ERR, "export(%s): %s", app_id, err);
 		kore_free(app_id);
-		send_error(req, 500, "服务器错误", "数据库暂时不可用。");
+		send_error(req, locale, 500, ats_i18n(locale, I18N_ERR_TITLE_SERVER), ats_i18n(locale, I18N_ERR_MSG_DB));
 		return (KORE_RESULT_OK);
 	}
 
 	ats_sb_init(&sb);
-	ats_sb_adds(&sb, "\xEF\xBB\xBF"
-	    "访问时间(UTC),页面,来源,访客IP,国家,设备,浏览器,操作系统,"
-	    "访客标识,记录状态\n");
+	ats_sb_adds(&sb, "\xEF\xBB\xBF");
+	ats_sb_adds(&sb, ats_i18n(locale, I18N_CSV_HEADER));
+	ats_sb_adds(&sb, "\n");
 
 	(void)ats_bind_text(stmt, 1, app_id);
 	n = 0;
@@ -2178,14 +2225,14 @@ ats_h_export(struct http_request *req)
 
 			if (i == 5) {
 				if (!strcmp(val, "pc"))
-					val = "桌面";
+					val = ats_i18n(locale, I18N_DEVICE_PC);
 				else if (!strcmp(val, "mobile"))
-					val = "移动";
+					val = ats_i18n(locale, I18N_DEVICE_MOBILE);
 				else if (!strcmp(val, "robot"))
-					val = "机器人";
+					val = ats_i18n(locale, I18N_DEVICE_ROBOT);
 			} else if ((i == 6 || i == 7) &&
 			    (*val == '\0' || !strcmp(val, "Unknown Platform"))) {
-				val = "未知";
+				val = ats_i18n(locale, I18N_UNKNOWN);
 			}
 
 			sb_csv_field(&sb, val);
@@ -2206,6 +2253,42 @@ ats_h_export(struct http_request *req)
 
 	kore_log(LOG_INFO, "exported %d rows for app %s", n, app_id);
 	kore_free(app_id);
+
+	return (KORE_RESULT_OK);
+}
+
+int
+ats_h_lang(struct http_request *req)
+{
+	enum ats_locale	cur, loc;
+	char		*code;
+	char		 ref[1024], cookie[256];
+	int		 secure;
+
+	cur = ats_locale_for_request(req);
+	code = ats_segment(req, 2);
+	loc = ats_locale_from_code(code);
+	kore_free(code);
+
+	if (loc < 0) {
+		send_error(req, cur, 404,
+		    ats_i18n(cur, I18N_ERR_TITLE_NOT_FOUND),
+		    ats_i18n(cur, I18N_ERR_MSG_NOT_FOUND));
+		return (KORE_RESULT_OK);
+	}
+
+	ref[0] = '\0';
+	(void)ats_query_get(req, "ref", ref, sizeof(ref));
+	if (ref[0] != '/' || ref[1] == '/' || ref[1] == '\\' ||
+	    strchr(ref, '\r') != NULL || strchr(ref, '\n') != NULL)
+		(void)snprintf(ref, sizeof(ref), "/dv");
+
+	secure = strncmp(ats_base_url(), "https://", 8) == 0;
+	(void)snprintf(cookie, sizeof(cookie),
+	    "ats_lang=%s; Path=/; Max-Age=31536000; SameSite=Lax%s",
+	    ats_locale_code(loc), secure ? "; Secure" : "");
+	http_response_header(req, "set-cookie", cookie);
+	ats_send_redirect(req, 303, ref);
 
 	return (KORE_RESULT_OK);
 }

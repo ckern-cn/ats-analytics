@@ -1,0 +1,126 @@
+/* English catalog. Included only by i18n.c. */
+static const char *const ats_lang_en[I18N_KEY_COUNT] = {
+	[I18N_NAV_DASHBOARD] = "Dashboard",
+	[I18N_NAV_NEW_APP] = "New app",
+	[I18N_NAV_LOGOUT] = "Log out",
+	[I18N_LANG_LABEL] = "Language",
+
+	[I18N_LOGIN_TITLE] = "Sign in",
+	[I18N_LOGIN_SUBTITLE] = "Private traffic analytics",
+	[I18N_LOGIN_USERNAME] = "User name",
+	[I18N_LOGIN_PASSWORD] = "Password",
+	[I18N_LOGIN_SUBMIT] = "Sign in",
+	[I18N_LOGIN_NOSCRIPT] = "JavaScript is required to sign in.",
+	[I18N_ERR_TOO_MANY] = "Too many attempts. Try again later.",
+	[I18N_ERR_BAD_CREDENTIALS] = "Invalid user name or password.",
+	[I18N_ERR_LOGIN_DISABLED_TITLE] = "Login disabled",
+	[I18N_ERR_LOGIN_DISABLED_MSG] =
+	    "Set ATS_ADMIN_PASSWORD or ATS_ADMIN_PASSWORD_SHA256.",
+
+	[I18N_APP_NEW_TITLE] = "New app",
+	[I18N_APP_EDIT_TITLE] = "Edit app",
+	[I18N_APP_NAME] = "Name",
+	[I18N_APP_NAME_PLACEHOLDER] = "My site",
+	[I18N_APP_HOSTS] = "Hosts",
+	[I18N_APP_HOSTS_PLACEHOLDER] = "example.com, www.example.com",
+	[I18N_APP_HOSTS_HELP] =
+	    "Up to three host names, separated by commas. A full URL is reduced "
+	    "to its host.",
+	[I18N_APP_NOTE] = "Note",
+	[I18N_APP_NOTE_PLACEHOLDER] = "optional",
+	[I18N_APP_SAVE] = "Save",
+	[I18N_APP_CANCEL] = "Cancel",
+	[I18N_APP_DELETE] = "Delete app",
+	[I18N_APP_DELETE_CONFIRM] = "Delete this app and all of its traffic?",
+	[I18N_ERR_FORM] = "Invalid form submission.",
+	[I18N_ERR_APP_NAME] = "App name is required.",
+	[I18N_ERR_HOSTS] = "Enter 1-3 valid host names.",
+	[I18N_ERR_HOSTS_EXAMPLE] =
+	    "Enter 1-3 valid host names (for example example.com).",
+	[I18N_ERR_HOST_TAKEN] = "That host is already tracked.",
+	[I18N_ERR_HOST_TAKEN_FMT] =
+	    "Host %s is already tracked by another app.",
+	[I18N_ERR_MISSING_ID] = "Missing app id.",
+	[I18N_ERR_CONFIRM] = "Confirmation required.",
+	[I18N_ERR_CREATE_APP] = "Could not create the app.",
+	[I18N_ERR_UPDATE_APP] = "Could not update the app.",
+	[I18N_ERR_APP_NOT_FOUND] = "That app does not exist.",
+
+	[I18N_CREATED_TITLE] = "App created",
+	[I18N_CREATED_FLASH] = "App created.",
+	[I18N_CREATED_TRACKING] = "Tracking",
+	[I18N_CREATED_OPEN] = "Open dashboard",
+	[I18N_CREATED_ANOTHER] = "Add another",
+	[I18N_INSTALL_SUMMARY] = "Install tracker",
+	[I18N_INSTALL_HELP] =
+	    "Paste this before &lt;/body&gt; on every page you want to measure. "
+	    "The tracker uses the browser's Referer header; a strict "
+	    "<span class=\"mono\">Referrer-Policy: no-referrer</span> will "
+	    "prevent page attribution.",
+	[I18N_INSTALL_BADGE] = "Optional country/page-view badge:",
+
+	[I18N_DASH_TITLE] = "Dashboard",
+	[I18N_SIDEBAR_APPS] = "Apps",
+	[I18N_SIDEBAR_NEW] = "+ New app",
+	[I18N_WELCOME_TITLE] = "Welcome to ATS",
+	[I18N_WELCOME_TEXT] =
+	    "Create your first app to start collecting page views and visitors. "
+	    "You will get a small script tag to paste into your site.",
+	[I18N_WELCOME_CTA] = "Create an app",
+	[I18N_UNKNOWN_APP] = "Unknown app",
+	[I18N_EXPORT_CSV] = "Export CSV",
+	[I18N_EDIT_APP] = "Edit app",
+	[I18N_STAT_VISITORS] = "Visitors",
+	[I18N_STAT_PAGE_VIEWS] = "Page views",
+	[I18N_STAT_TODAY] = "Today",
+	[I18N_STAT_YESTERDAY] = "Yesterday",
+	[I18N_STAT_LAST_7] = "Last 7 days",
+	[I18N_STAT_LAST_30] = "Last 30 days",
+	[I18N_TODAY_UV_FMT] = "%lld visitors",
+	[I18N_TREND_TITLE] = "Last 14 days",
+	[I18N_TREND_HINT] = "page views per day",
+	[I18N_TOP_PAGES] = "Top pages",
+	[I18N_TOP_REFS] = "Referrers",
+	[I18N_TOP_COUNTRIES] = "Countries",
+	[I18N_PERIOD_30] = "30 days",
+	[I18N_RECENT_TITLE] = "Recent visits",
+	[I18N_RECENT_HINT] = "newest first",
+	[I18N_NO_DATA] = "No data yet.",
+	[I18N_NO_VISITS] =
+	    "No visits recorded yet. Install the tracker and open your site.",
+	[I18N_UNKNOWN] = "Unknown",
+	[I18N_TH_PAGE] = "Page",
+	[I18N_TH_REFERRER] = "Referrer",
+	[I18N_TH_IP] = "IP",
+	[I18N_TH_COUNTRY] = "Country",
+	[I18N_TH_BROWSER] = "Browser",
+	[I18N_TH_OS] = "OS",
+	[I18N_TH_TIME] = "Time",
+	[I18N_PAGER_FIRST] = "First",
+	[I18N_PAGER_PREV] = "Previous",
+	[I18N_PAGER_NEXT] = "Next",
+	[I18N_PAGER_LAST] = "Last",
+	[I18N_PV_VIEWS] = "Views",
+	[I18N_PV_OTHERS] = "Others",
+	[I18N_PV_UNKNOWN] = "Unknown",
+
+	[I18N_ERR_TITLE_SERVER] = "Server error",
+	[I18N_ERR_MSG_DB] = "Database unavailable.",
+	[I18N_ERR_TITLE_FORBIDDEN] = "Forbidden",
+	[I18N_ERR_MSG_ORIGIN] = "Cross-origin request rejected.",
+	[I18N_ERR_TITLE_BAD_REQUEST] = "Bad request",
+	[I18N_ERR_TITLE_NOT_FOUND] = "Not found",
+	[I18N_ERR_MSG_NOT_FOUND] = "The requested resource was not found.",
+	[I18N_ERR_MSG_BAD_JSON] = "Malformed JSON.",
+	[I18N_ERR_MSG_CREDENTIALS_REQUIRED] =
+	    "username and password are required.",
+	[I18N_ERR_MSG_SESSION] = "Cannot create a session.",
+	[I18N_BACK_DASHBOARD] = "Back to dashboard",
+
+	[I18N_CSV_HEADER] =
+	    "visit_date_utc,page_url,referring_url,visitor_ip,country,"
+	    "device_type,browser,operating_system,unique_visitors,record_status",
+	[I18N_DEVICE_PC] = "desktop",
+	[I18N_DEVICE_MOBILE] = "mobile",
+	[I18N_DEVICE_ROBOT] = "robot",
+};
