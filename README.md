@@ -1,3 +1,5 @@
+<p align="center"><img src="public/res/app-icon.png" width="96" height="96" alt="ATS icon"></p>
+
 # ATS — 自托管网站 / APP 流量统计
 
 一个轻量的自托管流量统计工具：单二进制、SQLite、无外部运行时依赖。包含

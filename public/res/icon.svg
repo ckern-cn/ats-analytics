@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="ATS">
+  <title>ATS</title>
+  <rect width="512" height="512" rx="112" fill="#0f766e"/>
+  <rect x="10" y="10" width="492" height="492" rx="103" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M148 396 256 132 364 396" fill="none" stroke="#ffffff" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M190 300H322" fill="none" stroke="#fbbf24" stroke-width="64" stroke-linecap="round"/>
+</svg>
