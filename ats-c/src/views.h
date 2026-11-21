@@ -5,6 +5,7 @@
 
 #include <kore/http.h>
 
+#include "i18n.h"
 #include "util.h"
 
 struct ats_app_row {
@@ -70,20 +71,22 @@ struct ats_dashboard {
 	int				 page_count;
 };
 
-void	view_error(struct ats_sb *, int status, const char *title,
-	    const char *message);
+void	view_error(struct ats_sb *, enum ats_locale, int status,
+	    const char *title, const char *message);
 void	view_js_msg(struct ats_sb *, const char *msg);
 void	view_js_api_wru(struct ats_sb *, uint64_t id, const char *token);
-void	view_js_res_pv(struct ats_sb *, const char *container,
+void	view_js_res_pv(struct ats_sb *, enum ats_locale, const char *container,
 	    long long pv_total, const struct ats_country_count *rows, int n,
 	    long long others);
-void	view_login(struct ats_sb *, const char *ref, const char *error);
-void	view_app_form(struct ats_sb *, const char *title, const char *action,
+void	view_login(struct ats_sb *, enum ats_locale, const char *ref,
+	    const char *error);
+void	view_app_form(struct ats_sb *, struct http_request *,
+	    enum ats_locale, const char *title, const char *action,
 	    const char *id, const char *name, const char *hosts,
 	    const char *remark, const char *error);
-void	view_create_success(struct ats_sb *, uint64_t id, const char *name,
-	    const char *host);
+void	view_create_success(struct ats_sb *, struct http_request *,
+	    enum ats_locale, uint64_t id, const char *name, const char *host);
 void	view_data_view(struct ats_sb *, struct http_request *,
-	    const struct ats_dashboard *);
+	    enum ats_locale, const struct ats_dashboard *);
 
 #endif

@@ -48,6 +48,7 @@ static const struct route	routes[] = {
 	{ "login",		0, 0, ats_h_login },
 	{ "do_login",		1, 0, ats_h_do_login },
 	{ "logout",		1, 0, ats_h_logout },
+	{ "lang/(.*)",		0, 0, ats_h_lang },
 };
 
 static int	utf8_valid(const unsigned char *, size_t);

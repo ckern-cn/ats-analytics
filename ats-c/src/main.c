@@ -24,6 +24,7 @@
 
 #include "ats.h"
 #include "db.h"
+#include "i18n.h"
 #include "snowflake.h"
 #include "throttle.h"
 #include "ua.h"
@@ -150,6 +151,8 @@ kore_parent_configure(int argc, char **argv)
 
 	if (ats_config_init() == -1)
 		fatal("config: invalid runtime configuration");
+	if (ats_i18n_init() == -1)
+		fatal("i18n: initialization failed");
 
 	{
 		char err[256];

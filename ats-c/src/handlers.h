@@ -20,6 +20,7 @@ int	ats_h_export(struct http_request *);
 int	ats_h_login(struct http_request *);
 int	ats_h_do_login(struct http_request *);
 int	ats_h_logout(struct http_request *);
+int	ats_h_lang(struct http_request *);
 int	ats_h_health(struct http_request *);
 
 /* Shared response helpers (also used by the router). */

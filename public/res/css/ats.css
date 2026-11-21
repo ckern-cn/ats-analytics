@@ -60,6 +60,10 @@ a:hover { text-decoration: underline; }
 .nav a { color: var(--muted); }
 .nav a:hover { color: var(--accent); }
 .nav form { margin: 0; }
+.lang-switch { display: inline-flex; align-items: center; gap: 6px; }
+.lang-switch a { color: var(--muted); font-size: 12px; }
+.lang-switch a.active { color: var(--fg); font-weight: 600; }
+.login-lang { text-align: center; margin-top: 8px; }
 .nav .linkbtn { background: none; border: 0; padding: 0; color: var(--muted); font: inherit; cursor: pointer; }
 .nav .linkbtn:hover { color: var(--accent); }
 
