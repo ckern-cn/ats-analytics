@@ -1,7 +1,9 @@
 # Third-party notices
 
-ATS is distributed under the MIT license (see `LICENSE`). This file lists the
-third-party components that are included in, or required by, the project.
+The ATS source code is distributed under the MIT license (see `LICENSE`).
+Project brand assets are excluded from that license; see `NOTICE` and
+`TRADEMARK.md`. This file lists the third-party components that are included
+in, or required by, the project.
 
 ## Bundled in this repository
 
@@ -34,12 +36,13 @@ third-party components that are included in, or required by, the project.
   notice with the actual source and license.
 - Upstream: https://github.com/HatScripts/circle-flags
 
-### Favicon and globe icon
+### Globe icon
 
-- Location: `public/favicon.ico`, `public/res/globe.svg`
-- These were carried over from the original deployment. Their original source
-  and license are not recorded in this repository. Replace them with your own
-  assets, or document their source, before publishing a fork.
+- Location: `public/res/globe.svg`
+- The original source and license of this generic globe asset are not recorded
+  in this repository. Replace it with your own asset, or document its source,
+  before publishing a fork. The ATS logo/favicon are brand assets covered by
+  `NOTICE` and `TRADEMARK.md`, not third-party assets.
 
 ## Ported / derived code
 

@@ -26,3 +26,6 @@ ats-c/vendor/kore-4.2.3/kodev/kodev
 
 # local GeoIP database (not distributed)
 data/*.mmdb
+
+# release artifacts
+dist/

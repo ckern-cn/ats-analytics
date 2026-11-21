@@ -75,6 +75,8 @@ install -o ats -g ats -m 0755 "$REPO"/tools/http-fuzz-smoke.sh "$DEST"/tools/
 install -o ats -g ats -m 0755 "$REPO"/tools/set-password.sh "$DEST"/tools/
 install -o ats -g ats -m 0644 "$REPO"/README.md "$DEST"/README.md 2>/dev/null || true
 install -o ats -g ats -m 0644 "$REPO"/LICENSE "$DEST"/LICENSE 2>/dev/null || true
+install -o ats -g ats -m 0644 "$REPO"/NOTICE "$DEST"/NOTICE 2>/dev/null || true
+install -o ats -g ats -m 0644 "$REPO"/TRADEMARK.md "$DEST"/TRADEMARK.md 2>/dev/null || true
 install -o ats -g ats -m 0644 "$REPO"/THIRD_PARTY_NOTICES.md "$DEST"/THIRD_PARTY_NOTICES.md 2>/dev/null || true
 install -o ats -g ats -m 0644 "$REPO"/SECURITY.md "$DEST"/SECURITY.md 2>/dev/null || true
 chown -R ats:ats "$DEST"/public "$DEST"/tools

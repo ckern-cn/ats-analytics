@@ -1,0 +1,66 @@
+name: Bug report
+description: Report a reproducible problem
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please do not include passwords, JWT keys,
+        `.env` contents, database dumps or visitor data. Security issues should
+        go through the private advisory link instead.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Release version, tag, or `git rev-parse HEAD`
+      placeholder: "0.1.0 / 65a8dd5"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, nginx/systemd version, browser if UI-only
+      placeholder: "Rocky Linux 8, nginx 1.20, Firefox 130"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: journalctl/nginx logs with secrets and visitor data redacted
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and documentation
+          required: true
+        - label: I am using the latest release or main branch
+          required: true
+        - label: I removed secrets and personal data from the report
+          required: true

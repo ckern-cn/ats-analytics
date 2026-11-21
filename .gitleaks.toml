@@ -7,6 +7,7 @@ useDefault = true
 description = "Documented local test values and placeholders"
 paths = [
   '''README\.md''',
+  '''docs/.*\.md''',
   '''deploy/ats-capi\.env\.example''',
   '''tools/ci-local\.sh''',
   '''tools/smoke\.sh''',
