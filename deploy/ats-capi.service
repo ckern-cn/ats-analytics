@@ -1,0 +1,38 @@
+[Unit]
+Description=ATS traffic analytics (Kore, loopback 3001)
+Documentation=file:/webapps/ats-c/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ats
+Group=ats
+WorkingDirectory=/webapps/ats-c
+EnvironmentFile=/etc/ats-capi.env
+
+# Single binary; config is embedded at build time.
+ExecStart=/webapps/ats-c/bin/ats-capi -fnr
+Restart=always
+RestartSec=2
+
+UMask=0077
+LimitNOFILE=65535
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+ReadWritePaths=/webapps/ats-c/data /webapps/ats-c/log
+
+# SQLite's extra syscalls are allowed by the KORE_SECCOMP_FILTER("ats-sqlite")
+# hook in ats-c/src/main.c.
+
+[Install]
+WantedBy=multi-user.target

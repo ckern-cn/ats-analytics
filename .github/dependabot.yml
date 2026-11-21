@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: gitsubmodule
+    directory: /
+    schedule:
+      interval: weekly
+    # Kore is vendored as plain files, not a submodule; this entry is here so
+    # Dependabot starts tracking submodules if one is added later.

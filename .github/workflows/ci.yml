@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential libsqlite3-dev libmaxminddb-dev \
+            libpcre2-dev libssl-dev sqlite3 shellcheck cppcheck
+
+      - name: Build and smoke (prod)
+        run: tools/ci-local.sh prod
+
+      - name: Build and smoke (ASan + UBSan)
+        env:
+          ASAN_OPTIONS: detect_leaks=0
+        run: tools/ci-local.sh asan
+
+      - name: shellcheck
+        run: shellcheck -S error tools/*.sh deploy/*.sh
+
+      - name: cppcheck
+        continue-on-error: true
+        run: |
+          cppcheck --error-exitcode=1 --enable=warning \
+            --suppress=missingIncludeSystem ats-c/src
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
