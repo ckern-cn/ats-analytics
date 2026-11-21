@@ -156,7 +156,9 @@ sb_page_head(struct ats_sb *sb, const char *title)
 	ats_sb_html(sb, title);
 	ats_sb_adds(sb, " - ATS</title>\n"
 	    "<link rel=\"stylesheet\" href=\"/res/css/ats.css\">\n"
-	    "<link rel=\"icon\" href=\"/favicon.ico\">\n"
+	    "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"any\">\n"
+	    "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/res/icon.svg\">\n"
+	    "<link rel=\"apple-touch-icon\" href=\"/res/app-icon-180.png\">\n"
 	    "</head>\n<body>\n");
 }
 
@@ -189,6 +191,7 @@ view_login(struct ats_sb *sb, const char *ref, const char *error)
 	sb_page_head(sb, "登录");
 	ats_sb_adds(sb, "<div class=\"login-page\"><div class=\"login-card\">\n"
 	    "<div class=\"panel\">\n"
+	    "<img class=\"login-icon\" src=\"/res/icon.svg\" width=\"64\" height=\"64\" alt=\"ATS\">\n"
 	    "<h1>ATS</h1>\n"
 	    "<p class=\"sub\">私有流量统计</p>\n");
 
@@ -238,7 +241,7 @@ view_app_form(struct ats_sb *sb, const char *title, const char *action,
 {
 	sb_page_head(sb, title);
 	ats_sb_adds(sb, "<div class=\"topbar\"><div class=\"wrap\">"
-	    "<a class=\"brand\" href=\"/dv\">ATS</a>"
+	    "<a class=\"brand\" href=\"/dv\"><img class=\"brand-icon\" src=\"/res/icon-mark.svg\" alt=\"\">ATS</a>"
 	    "<nav class=\"nav\"><a href=\"/dv\">仪表盘</a>");
 	sb_logout_button(sb);
 	ats_sb_adds(sb, "</nav></div></div>\n"
@@ -328,7 +331,7 @@ view_create_success(struct ats_sb *sb, uint64_t id, const char *name,
 
 	sb_page_head(sb, "应用已创建");
 	ats_sb_adds(sb, "<div class=\"topbar\"><div class=\"wrap\">"
-	    "<a class=\"brand\" href=\"/dv\">ATS</a>"
+	    "<a class=\"brand\" href=\"/dv\"><img class=\"brand-icon\" src=\"/res/icon-mark.svg\" alt=\"\">ATS</a>"
 	    "<nav class=\"nav\"><a href=\"/dv\">仪表盘</a>");
 	sb_logout_button(sb);
 	ats_sb_adds(sb, "</nav></div></div>\n"
@@ -598,7 +601,7 @@ view_data_view(struct ats_sb *sb, struct http_request *req,
 
 	sb_page_head(sb, cur != NULL ? cur->name : "仪表盘");
 	ats_sb_adds(sb, "<div class=\"topbar\"><div class=\"wrap\">"
-	    "<a class=\"brand\" href=\"/dv\">ATS</a>"
+	    "<a class=\"brand\" href=\"/dv\"><img class=\"brand-icon\" src=\"/res/icon-mark.svg\" alt=\"\">ATS</a>"
 	    "<nav class=\"nav\"><a href=\"/create\">新建应用</a>");
 	sb_logout_button(sb);
 	ats_sb_adds(sb, "</nav></div></div>\n"

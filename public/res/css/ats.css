@@ -44,11 +44,16 @@ a:hover { text-decoration: underline; }
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   font-size: 18px;
   letter-spacing: .02em;
   color: var(--fg);
 }
+.brand-icon { width: 22px; height: 22px; }
+.login-icon { width: 64px; height: 64px; display: block; margin: 0 auto 14px; }
 .brand span { color: var(--accent); }
 
 .nav { display: flex; align-items: center; gap: 14px; color: var(--muted); }
