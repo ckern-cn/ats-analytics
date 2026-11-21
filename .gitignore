@@ -1,0 +1,28 @@
+# build output
+ats-c/build/
+ats-c/bin/
+ats-c/src/schema_sql.h
+
+# runtime data and secrets
+ats-c/data/
+ats-c/log/
+ats-c/backup/
+data/*.db
+data/*.db-wal
+data/*.db-shm
+*.db
+*.db-wal
+*.db-shm
+*.env
+!deploy/*.example
+
+# editor / OS
+*.o
+*.swp
+.DS_Store
+
+# kodev build artifact inside the vendored Kore tree
+ats-c/vendor/kore-4.2.3/kodev/kodev
+
+# local GeoIP database (not distributed)
+data/*.mmdb

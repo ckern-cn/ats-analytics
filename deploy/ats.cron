@@ -1,0 +1,8 @@
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+# Daily backup + retention + checkpoint.
+17 3 * * * root /webapps/ats-c/tools/maintenance.sh >> /var/log/ats-maintenance.log 2>&1
+
+# Weekly GeoIP refresh (the service reloads the mmdb within a minute).
+23 4 * * 3 root ATS_GEOIP_CONF=/etc/GeoIP-ats.conf /webapps/ats-c/tools/update-geoip.sh >> /var/log/ats-geoip.log 2>&1

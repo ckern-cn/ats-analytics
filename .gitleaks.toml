@@ -1,0 +1,13 @@
+title = "ATS gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented local test values and placeholders"
+paths = [
+  '''README\.md''',
+  '''deploy/ats-capi\.env\.example''',
+  '''tools/ci-local\.sh''',
+  '''tools/smoke\.sh''',
+]
