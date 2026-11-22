@@ -34,6 +34,8 @@ All notable changes to this project are documented here. The format is based on
 
 ### Fixed
 
+- The login page no longer adds the studio footer to a full `100vh`, which
+  caused an unnecessary vertical scrollbar on desktop.
 - Admin form posts from embedded or sandboxed browsers that send
   `Origin: null` together with `Sec-Fetch-Site: same-origin` are no longer
   rejected as cross-site. A non-null Origin still has to match

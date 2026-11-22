@@ -306,7 +306,10 @@ table.visits tbody tr:hover { background: #fafcfb; }
 .details code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
 .login-page {
-  min-height: 100vh;
+  /* The studio footer sits below the page; subtract its height so the login
+     viewport itself does not create an unnecessary scrollbar. */
+  min-height: calc(100vh - 50px);
+  min-height: calc(100svh - 50px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -336,6 +339,10 @@ table.visits tbody tr:hover { background: #fafcfb; }
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wrap { padding: 0 14px; }
   .studio-credit { padding: 0 14px 24px; }
+  .login-page {
+    min-height: calc(100vh - 42px);
+    min-height: calc(100svh - 42px);
+  }
   .topbar .wrap { flex-wrap: wrap; }
   table.visits th:nth-child(5), table.visits td:nth-child(5),
   table.visits th:nth-child(6), table.visits td:nth-child(6) { display: none; }
