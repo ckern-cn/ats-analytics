@@ -19,7 +19,7 @@ identity and official distribution channels, not the letters themselves.
 Official releases are published only by the maintainer:
 
 - GitHub: <https://github.com/ckern-cn/ats-analytics>
-- Gitee: <https://gitee.com/mywliu/ats-analytics>
+- Gitee: <https://gitee.com/ckern/ats-analytics>
 
 Only artifacts published from these channels are official. If you get a build
 elsewhere, it is an unofficial build unless the maintainer says otherwise.

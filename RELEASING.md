@@ -84,7 +84,7 @@ The source archives are also provided by GitHub/Gitee from the tagged commit.
 ## Official channels
 
 - GitHub: <https://github.com/ckern-cn/ats-analytics/releases>
-- Gitee: <https://gitee.com/mywliu/ats-analytics/releases>
+- Gitee: <https://gitee.com/ckern/ats-analytics/releases>
 
 Do not publish official binaries from CI automatically. Release approval is
 manual and belongs to the maintainer. Forks may publish their own builds under

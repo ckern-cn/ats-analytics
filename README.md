@@ -140,7 +140,7 @@ ATS 由 [ckern studio](https://ckern.cn/) 维护。ckern 是一家只做本地�
   [NOTICE](NOTICE)。
 - 官方仓库：
   - GitHub <https://github.com/ckern-cn/ats-analytics>
-  - Gitee <https://gitee.com/mywliu/ats-analytics>
+  - Gitee <https://gitee.com/ckern/ats-analytics>
 
 只有上述官方渠道发布的构建才是官方版本。Fork 可以自由发布，但必须使用不同的
 项目名称和视觉标识，不能暗示官方身份。

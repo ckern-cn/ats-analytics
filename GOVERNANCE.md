@@ -6,8 +6,8 @@ contributions, and maintainer-controlled brand and official releases.
 
 ## Maintainer
 
-- ywliu — GitHub [@ckern-cn](https://github.com/ckern-cn),
-  Gitee [@mywliu](https://gitee.com/mywliu)
+- ckern — GitHub [@ckern-cn](https://github.com/ckern-cn),
+  Gitee [@ckern](https://gitee.com/ckern)
 
 The maintainer is the copyright holder, release manager, and final decision
 maker for the project.

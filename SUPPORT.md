@@ -6,7 +6,7 @@ ATS is a free, self-hosted project. Support is best-effort and provided through
 the public issue tracker:
 
 - GitHub: <https://github.com/ckern-cn/ats-analytics/issues>
-- Gitee: <https://gitee.com/mywliu/ats-analytics/issues>
+- Gitee: <https://gitee.com/ckern/ats-analytics/issues>
 
 Please read `docs/` first and include the information requested by the bug
 report template. There is no SLA and no guarantee of a response time.
