@@ -47,10 +47,36 @@ check "cross-origin login rejected" 403 "$(code -X POST "$BASE/do_login" \
 	--data-urlencode "username=$USER" \
 	--data-urlencode "password=$HASH" \
 	--data-urlencode "ref=/dv")"
+check "spoofed fetch metadata rejected" 403 "$(code -X POST "$BASE/do_login" \
+	-H 'Origin: https://evil.example' \
+	-H 'Sec-Fetch-Site: same-origin' \
+	--data-urlencode "username=$USER" \
+	--data-urlencode "password=$HASH" \
+	--data-urlencode "ref=/dv")"
+check "opaque same-origin login allowed" 401 "$(code -X POST "$BASE/do_login" \
+	-H 'Origin: null' -H 'Sec-Fetch-Site: same-origin' \
+	--data-urlencode "username=$USER" \
+	--data-urlencode "password=nope" \
+	--data-urlencode "ref=/dv")"
+check "opaque cross-origin login rejected" 403 "$(code -X POST "$BASE/do_login" \
+	-H 'Origin: null' -H 'Sec-Fetch-Site: cross-site' \
+	--data-urlencode "username=$USER" \
+	--data-urlencode "password=nope" \
+	--data-urlencode "ref=/dv")"
 check "login" 303 "$(code -c "$JAR" -H "Origin: $BASE" -X POST "$BASE/do_login" \
 	--data-urlencode "username=$USER" \
 	--data-urlencode "password=$HASH" \
 	--data-urlencode "ref=/dv")"
+
+HDR=$(curl -s -D - -o /dev/null -H "Origin: $BASE" -X POST "$BASE/do_login" \
+	--data-urlencode "username=$USER" \
+	--data-urlencode "password=$HASH" \
+	--data "ref=%2Fdv%23x%0D%0AX-Injected%3A%20yes")
+if printf '%s' "$HDR" | grep -qi '^x-injected:'; then
+	fail "login ref header injection"
+else
+	ok "login ref header injection blocked"
+fi
 check "dashboard without cookie" 302 "$(code -o /dev/null "$BASE/dv")"
 check "bad password" 401 "$(code -X POST "$BASE/do_login" \
 	--data-urlencode "username=$USER" --data-urlencode "password=nope")"
@@ -157,6 +183,8 @@ check "delete" 303 "$(code -b "$JAR" -X POST "$BASE/do_delete" \
 check "deleted dashboard" 200 "$(code -b "$JAR" "$BASE/dv")"
 
 say "== logout =="
+check "cross-origin logout rejected" 403 "$(code -b "$JAR" \
+	-H 'Origin: https://evil.example' -X POST -d "" "$BASE/logout")"
 check "logout" 303 "$(code -b "$JAR" -c "$JAR" -X POST -d "" "$BASE/logout")"
 check "dashboard after logout" 302 "$(code -b "$JAR" "$BASE/dv")"
 

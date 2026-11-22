@@ -67,6 +67,17 @@ a:hover { text-decoration: underline; }
 .nav .linkbtn { background: none; border: 0; padding: 0; color: var(--muted); font: inherit; cursor: pointer; }
 .nav .linkbtn:hover { color: var(--accent); }
 
+.studio-credit {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px 32px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+.studio-credit a { color: var(--muted); }
+.studio-credit a:hover { color: var(--accent); text-decoration: none; }
+
 .layout {
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);
@@ -324,6 +335,7 @@ table.visits tbody tr:hover { background: #fafcfb; }
 @media (max-width: 620px) {
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wrap { padding: 0 14px; }
+  .studio-credit { padding: 0 14px 24px; }
   .topbar .wrap { flex-wrap: wrap; }
   table.visits th:nth-child(5), table.visits td:nth-child(5),
   table.visits th:nth-child(6), table.visits td:nth-child(6) { display: none; }

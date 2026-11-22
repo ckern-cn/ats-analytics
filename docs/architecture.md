@@ -74,7 +74,8 @@ request locale from the query, cookie or `Accept-Language`.
 | `visit_date` | UTC `YYYY-MM-DD HH:MM:SS` |
 | `visitor_ip` | optionally masked |
 | `user_agent`, `device_type`, `browser`, `operating_system` | UA parsing |
-| `country`, `city` | GeoIP |
+| `country` | GeoIP country; `hk`/`tw`/`mo` are folded to `cn` before storage |
+| `city` | reserved; currently always empty |
 | `visit_duration`, `traffic_source` | reserved; currently unused |
 | `record_status` | 0 = pending, 1 = URL backfilled |
 | `unique_visitors` | HMAC-SHA256 visitor identifier |
@@ -91,7 +92,9 @@ Indexes cover `(app_id, visit_date)`, `(app_id, record_status)`,
 - CSV formula-injection prefixing for spreadsheet safety.
 - JWT HS256 with `exp`, `nbf`, `iat` and `user_name` checks.
 - Login throttle (20 attempts / 5 minutes per IP) and a global 600/min limit.
-- `Origin` checks on state-changing POSTs; `SameSite=Lax` cookies.
+- `Origin` checks on state-changing POSTs; opaque `Origin: null` is accepted
+  only with `Sec-Fetch-Site: same-origin`, and `SameSite=Lax` cookies add a
+  second barrier.
 - `/wru` HMAC tokens.
 - systemd sandbox (`ProtectSystem=strict`, `ProtectHome`, `PrivateTmp`, no
   capabilities).

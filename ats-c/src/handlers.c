@@ -147,6 +147,18 @@ ats_send_status(struct http_request *req, int code)
 void
 ats_send_redirect(struct http_request *req, int status, const char *loc)
 {
+	/*
+	 * Kore writes header values verbatim. A CR/LF in a redirect target would
+	 * split the response and inject arbitrary headers, so reject it at the
+	 * boundary even if a caller forgot to validate its input.
+	 */
+	if (loc == NULL || strpbrk(loc, "\r\n") != NULL) {
+		kore_log(LOG_WARNING, "redirect: rejected control characters");
+		http_response_header(req, "cache-control", "no-store");
+		http_response(req, 400, NULL, 0);
+		return;
+	}
+
 	http_response_header(req, "location", loc);
 	http_response_header(req, "cache-control", "no-store");
 	http_response(req, status, NULL, 0);
@@ -667,12 +679,26 @@ host_matches(const char *a, const char *b)
 static int
 same_origin(struct http_request *req)
 {
-	const char	*origin, *base;
+	const char	*origin, *base, *site;
 	char		 host[MAX_HOST];
 
 	if (http_request_header(req, "origin", &origin) != KORE_RESULT_OK ||
 	    origin == NULL || *origin == '\0')
 		return (0);
+
+	/*
+	 * Some embedded browsers and sandboxed contexts send "Origin: null"
+	 * for same-origin form posts. Fetch Metadata can still identify those
+	 * as same-origin. A non-null Origin must pass the normal host check even
+	 * if a client (or proxy) supplies a misleading Sec-Fetch-Site header.
+	 */
+	if (!strcasecmp(origin, "null")) {
+		if (http_request_header(req, "sec-fetch-site", &site)
+		    == KORE_RESULT_OK && site != NULL &&
+		    !strcasecmp(site, "same-origin"))
+			return (0);
+		return (-1);
+	}
 
 	if (uri_host(origin, host, sizeof(host)) == -1)
 		return (-1);
@@ -1334,7 +1360,7 @@ ats_h_dv(struct http_request *req)
 
 	set_locale_header(req, locale);
 
-	char			 err[256], tmp[32], app_id[32], first_id[32];
+	char			 err[256] = "", tmp[32], app_id[32], first_id[32];
 	char			 ts_today[32], ts_yesterday[32], ts_7[32];
 	char			 ts_30[32], mod[32];
 	char			 times[ATS_PER_PAGE][32];
@@ -2061,6 +2087,14 @@ ats_h_do_login(struct http_request *req)
 	}
 	kore_free(body);
 
+	/*
+	 * The login form's ref is attacker-controlled. Keep it a same-site path;
+	 * CR/LF would otherwise reach the Location header through a fragment.
+	 */
+	if (ref[0] != '/' || ref[1] == '/' || ref[1] == '\\' ||
+	    strchr(ref, '\r') != NULL || strchr(ref, '\n') != NULL)
+		ref[0] = '\0';
+
 	hash = ats_admin_hash();
 	if (hash == NULL || *hash == '\0') {
 		kore_free(user);
@@ -2296,7 +2330,17 @@ ats_h_lang(struct http_request *req)
 int
 ats_h_logout(struct http_request *req)
 {
-	char	cookie[512];
+	enum ats_locale	locale = ats_locale_for_request(req);
+	char		cookie[512];
+
+	set_locale_header(req, locale);
+
+	if (same_origin(req) == -1) {
+		send_error(req, locale, 403,
+		    ats_i18n(locale, I18N_ERR_TITLE_FORBIDDEN),
+		    ats_i18n(locale, I18N_ERR_MSG_ORIGIN));
+		return (KORE_RESULT_OK);
+	}
 
 	(void)snprintf(cookie, sizeof(cookie),
 	    "auth_jwt=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; "

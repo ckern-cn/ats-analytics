@@ -11,6 +11,8 @@ Build dependencies:
 - PCRE2 development headers (`libpcre2-dev` / `pcre2-devel`)
 - OpenSSL development headers (only for the `kodev` build tool)
 - `sqlite3` CLI (used by the maintenance scripts)
+- `curl`, `tar`, `gzip` (installer and health checks)
+- a cron daemon (cronie on RHEL, cron on Debian) for backups and retention
 
 Ubuntu/Debian:
 
@@ -133,6 +135,10 @@ sudo nginx -t && sudo systemctl reload nginx
 
 The backend binds `127.0.0.1:3001`; do not expose it directly.
 
+ATS serves only `ats.ckern.cn`. The `ckern.cn` / `www.ckern.cn` apex belongs to
+the separate ckern studio homepage project; do not add an apex redirect to this
+config. The `443` default `444` block only closes unmatched TLS hosts.
+
 Optional: restrict admin routes to your own networks with
 `deploy/nginx-admin-allow.conf.example`. The tracking routes `/rv.js`, `/wru`
 and `/pv` must remain public.
@@ -156,7 +162,7 @@ a minute.
 ```sh
 systemctl status ats-capi
 curl http://127.0.0.1:3001/__health
-curl -I https://ats.ckern.cn/login
+curl -fsS https://ats.ckern.cn/login -o /dev/null
 ```
 
 Log in with the admin user and the password printed by the install script.

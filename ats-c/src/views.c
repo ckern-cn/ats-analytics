@@ -15,6 +15,9 @@
 #include "util.h"
 #include "views.h"
 
+/* Bump when /res/css/ats.css or /res/js/sha256.min.js changes. */
+#define ATS_ASSET_VERSION "20261130b"
+
 static void	pager_nav(struct ats_sb *, struct http_request *,
 		    enum ats_locale, int, int);
 static void	pager_url(struct ats_sb *, struct http_request *, int);
@@ -84,7 +87,7 @@ sb_flag(struct ats_sb *sb, const char *country)
 
 	ats_sb_adds(sb, "<img class=\"flag\" loading=\"lazy\" src=\"/res/flags/");
 	ats_sb_html(sb, code);
-	ats_sb_adds(sb, ".svg\" alt=\"");
+	ats_sb_adds(sb, ".svg?v=" ATS_ASSET_VERSION "\" alt=\"");
 	if (country_ok(country))
 		sb_upper(sb, country);
 	ats_sb_adds(sb, "\">");
@@ -125,7 +128,8 @@ view_js_res_pv(struct ats_sb *sb, enum ats_locale locale,
 	    "img.src='");
 	ats_sb_adds(sb, ats_base_url());
 	ats_sb_adds(sb,
-	    "/res/'+(code==='globe'?'globe.svg':'flags/'+code+'.svg');"
+	    "/res/'+(code==='globe'?'globe.svg?v=" ATS_ASSET_VERSION
+	    "':'flags/'+code+'.svg?v=" ATS_ASSET_VERSION "');"
 	    "img.alt='';img.loading='lazy';"
 	    "img.style.cssText='width:18px;height:12px;object-fit:cover;"
 	    "border-radius:1px;';"
@@ -221,7 +225,8 @@ sb_page_head(struct ats_sb *sb, enum ats_locale locale, const char *title)
 	    "<title>");
 	ats_sb_html(sb, title);
 	ats_sb_adds(sb, " - ATS</title>\n"
-	    "<link rel=\"stylesheet\" href=\"/res/css/ats.css\">\n"
+	    "<link rel=\"stylesheet\" href=\"/res/css/ats.css?v="
+	    ATS_ASSET_VERSION "\">\n"
 	    "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"any\">\n"
 	    "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/res/icon.svg\">\n"
 	    "<link rel=\"apple-touch-icon\" href=\"/res/app-icon-180.png\">\n"
@@ -231,7 +236,10 @@ sb_page_head(struct ats_sb *sb, enum ats_locale locale, const char *title)
 static void
 sb_page_foot(struct ats_sb *sb)
 {
-	ats_sb_adds(sb, "</body>\n</html>\n");
+	ats_sb_adds(sb, "<footer class=\"studio-credit\">"
+	    "<a href=\"https://ckern.cn/\" target=\"_blank\" "
+	    "rel=\"noopener noreferrer\">ckern studio</a> · ckern.cn"
+	    "</footer>\n</body>\n</html>\n");
 }
 
 void
@@ -300,7 +308,8 @@ view_login(struct ats_sb *sb, enum ats_locale locale, const char *ref,
 	sb_lang_switch(sb, NULL, locale, "/login");
 	ats_sb_adds(sb, "</div>\n"
 	    "</div></div>\n"
-	    "<script src=\"/res/js/sha256.min.js\"></script>\n"
+	    "<script src=\"/res/js/sha256.min.js?v="
+	    ATS_ASSET_VERSION "\"></script>\n"
 	    "<script>\n"
 	    "function pwd_crypto(){\n"
 	    "  var raw=document.getElementById('raw_pwd');\n"
@@ -321,7 +330,8 @@ view_app_form(struct ats_sb *sb, struct http_request *req,
 	sb_page_head(sb, locale, title);
 	ats_sb_adds(sb, "<div class=\"topbar\"><div class=\"wrap\">"
 	    "<a class=\"brand\" href=\"/dv\"><img class=\"brand-icon\" "
-	    "src=\"/res/icon-mark.svg\" alt=\"\">ATS</a>"
+	    "src=\"/res/icon.svg\" width=\"22\" height=\"22\" "
+	    "alt=\"\">ATS</a>"
 	    "<nav class=\"nav\"><a href=\"/dv\">");
 	ats_sb_html(sb, ats_i18n(locale, I18N_NAV_DASHBOARD));
 	ats_sb_adds(sb, "</a>");
@@ -458,7 +468,8 @@ view_create_success(struct ats_sb *sb, struct http_request *req,
 	sb_page_head(sb, locale, ats_i18n(locale, I18N_CREATED_TITLE));
 	ats_sb_adds(sb, "<div class=\"topbar\"><div class=\"wrap\">"
 	    "<a class=\"brand\" href=\"/dv\"><img class=\"brand-icon\" "
-	    "src=\"/res/icon-mark.svg\" alt=\"\">ATS</a>"
+	    "src=\"/res/icon.svg\" width=\"22\" height=\"22\" "
+	    "alt=\"\">ATS</a>"
 	    "<nav class=\"nav\"><a href=\"/dv\">");
 	ats_sb_html(sb, ats_i18n(locale, I18N_NAV_DASHBOARD));
 	ats_sb_adds(sb, "</a>");
@@ -751,7 +762,8 @@ view_data_view(struct ats_sb *sb, struct http_request *req,
 	    ats_i18n(locale, I18N_DASH_TITLE));
 	ats_sb_adds(sb, "<div class=\"topbar\"><div class=\"wrap\">"
 	    "<a class=\"brand\" href=\"/dv\"><img class=\"brand-icon\" "
-	    "src=\"/res/icon-mark.svg\" alt=\"\">ATS</a>"
+	    "src=\"/res/icon.svg\" width=\"22\" height=\"22\" "
+	    "alt=\"\">ATS</a>"
 	    "<nav class=\"nav\"><a href=\"/create\">");
 	ats_sb_html(sb, ats_i18n(locale, I18N_NAV_NEW_APP));
 	ats_sb_adds(sb, "</a>");

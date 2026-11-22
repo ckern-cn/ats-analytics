@@ -33,20 +33,31 @@ tools/ci-local.sh prod
 echo "== package $STAGE =="
 rm -rf "$DIST/$STAGE"
 mkdir -p "$DIST/$STAGE"
-# Ship a complete, installable tree with the tested binary. Exclude local
-# runtime data, build intermediates, secrets and the dist directory itself.
-tar -C "$ROOT" \
-	--exclude='ats-c/build' \
-	--exclude='ats-c/data' \
-	--exclude='ats-c/log' \
-	--exclude='ats-c/src/schema_sql.h' \
-	--exclude='ats-c/vendor/kore-4.2.3/kodev/kodev' \
-	--exclude='.git' \
-	--exclude='dist' \
-	-cf - . | tar -C "$DIST/$STAGE" -xf -
 
-tar -C "$DIST" -czf "$DIST/$STAGE.tar.gz" "$STAGE"
+# Build from the tracked tree, not from the working directory: this excludes
+# ignored data, secrets and build intermediates without maintaining a fragile
+# exclusion list. The working tree is required to be clean above.
+TMP_TAR="$DIST/.$STAGE.tar"
+rm -f "$TMP_TAR"
+git archive --format=tar --prefix="$STAGE/" -o "$TMP_TAR" HEAD
+tar --no-same-owner --no-same-permissions -C "$DIST" -xf "$TMP_TAR"
+rm -f "$TMP_TAR"
+
+# The tested binary is a build artifact, not tracked in git.
+mkdir -p "$DIST/$STAGE/ats-c/bin"
+install -m 0755 "$ROOT/ats-c/bin/ats-capi" "$DIST/$STAGE/ats-c/bin/ats-capi"
+chmod -R go-w "$DIST/$STAGE"
+
+tar -C "$DIST" --owner=0 --group=0 --numeric-owner \
+    -czf "$DIST/$STAGE.tar.gz" "$STAGE"
 rm -rf "$DIST/$STAGE"
+
+# Refuse to publish a tarball that contains runtime data, secrets or a GeoIP
+# database. The release notes promise these are absent.
+if tar tzf "$DIST/$STAGE.tar.gz" | grep -Eq '(^|/)(\.env|jwt\.key|[^/]+\.env|.*\.db|.*\.db-wal|.*\.db-shm|.*\.mmdb|.*\.p12)$'; then
+	echo "refusing to publish: secret or runtime data in artifact" >&2
+	exit 1
+fi
 
 (
 	cd "$DIST"

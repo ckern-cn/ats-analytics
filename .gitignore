@@ -13,8 +13,16 @@ data/*.db-shm
 *.db
 *.db-wal
 *.db-shm
+*.journal
 *.env
+*.env.*
 !deploy/*.example
+jwt.key
+*.pem
+*.key
+*.p12
+# Kore's public RFC 7919 DH parameter, not a secret.
+!ats-c/vendor/kore-4.2.3/misc/ffdhe4096.pem
 
 # editor / OS
 *.o

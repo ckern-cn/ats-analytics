@@ -8,7 +8,8 @@
   <img src="https://img.shields.io/badge/UI-zh--CN%20%7C%20en-0f766e" alt="UI languages">
 </p>
 
-一个轻量的自托管流量统计工具：单二进制、SQLite、无外部运行时依赖。包含埋点脚本、
+一个轻量的自托管流量统计工具：单个应用二进制、SQLite；不依赖语言运行时
+（动态链接系统 SQLite、libmaxminddb、PCRE2）。包含埋点脚本、
 PV / 访客统计、来源 / 页面 / 国家排行、14 天趋势和管理后台。
 
 默认界面为简体中文，支持英文；语言包可扩展。示例部署：
@@ -16,8 +17,8 @@ PV / 访客统计、来源 / 页面 / 国家排行、14 天趋势和管理后台
 
 ## 特性
 
-- **单二进制**：C + [Kore](https://kore.io)，运行时只需要 SQLite 和可选的
-  MaxMind GeoIP 数据库。
+- **单二进制**：C + [Kore](https://kore.io)，运行时需要系统 SQLite、libmaxminddb、PCRE2；
+  MaxMind GeoIP 数据库可选。
 - **轻量**：默认 2 个 worker，常驻内存约 10 MB；静态资源由 nginx 提供。
 - **埋点简单**：一个 `<script async src=".../rv.js/<app-id>">`。
 - **看板**：访客数、PV、今日 / 昨日 / 7 天 / 30 天、14 天趋势、热门页面、
@@ -126,6 +127,10 @@ sudo deploy/install.sh --reset-data
 - 提交代码：`git commit -s`，保持 PR 小而聚焦。
 - 翻译：复制 `ats-c/src/lang/en.h`，按 [i18n 文档](docs/i18n.md) 添加语言。
 - 安全问题：不要公开提 issue，见 [SECURITY.md](SECURITY.md)。
+
+## 工作室
+
+ATS 由 [ckern studio](https://ckern.cn/) 维护。ckern 是一家只做本地优先软件的独立工作室。
 
 ## 许可与品牌
 

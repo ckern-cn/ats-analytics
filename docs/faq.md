@@ -11,8 +11,27 @@
 
 ### “Origin” / 403 on login or app changes
 
-The `Origin` header must match `ATS_BASE_URL`'s host. Access the site through
+The `Origin` header should match `ATS_BASE_URL`'s host. Access the site through
 the canonical host, not an IP or an alternate domain.
+
+Some embedded browsers and sandboxed pages send `Origin: null` for same-origin
+form posts. ATS accepts those when the browser also sends
+`Sec-Fetch-Site: same-origin`; a cross-site request, or a null origin without
+that Fetch Metadata hint, is still rejected. If a normal browser still gets a
+403, check that no reverse proxy rewrites the `Origin` header and that the page
+is not opened through an IP or alternate domain.
+
+### The dashboard icon is huge or the layout looks old
+
+The browser is probably using a stale `/res/css/ats.css`. Hard refresh once
+(Ctrl/Cmd+Shift+R). Admin CSS/JS URLs are versioned and nginx caches them for
+one hour; images under `/res/` stay cached longer.
+
+### Why do Hong Kong, Macau and Taiwan show as CN?
+
+The tracker folds the GeoIP codes `hk`, `tw` and `mo` to `cn` before storing a
+row, matching the original AppCtrl behavior. Country lists and CSV exports
+therefore show `CN`, and no separate flag files are shipped for those codes.
 
 ### The tracking script records nothing
 
