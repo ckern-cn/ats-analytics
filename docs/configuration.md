@@ -9,10 +9,10 @@ systemd reads before dropping privileges to the `ats` user.
 | Variable | Default | Description |
 |---|---|---|
 | `ATS_BASE_URL` | `http://127.0.0.1:3001` | Public HTTPS URL used for tracking snippets, redirects and the language switch. Must be set in production. |
-| `ATS_COOKIE_DOMAIN` | `127.0.0.1` | Domain for the `auth_jwt` and `ats_lang` cookies. Set to the site domain in production. |
+| `ATS_COOKIE_DOMAIN` | `127.0.0.1` | Domain for the `auth_jwt` cookie. `ats_lang` is host-only. Set to the site domain in production. |
 | `ATS_ADMIN_USER` | `admin` | Admin user name. |
 | `ATS_ADMIN_PASSWORD` | none | Plaintext admin password; hashed at startup. |
-| `ATS_ADMIN_PASSWORD_SHA256` | none | 64-hex SHA-256 digest. Preferred over plaintext; written by the install and password scripts. |
+| `ATS_ADMIN_PASSWORD_SHA256` | none | 64-hex SHA-256 digest. Preferred over plaintext; written by the install and password scripts. Treat it as a password-equivalent secret. |
 | `ATS_JWT_KEY` | generated | HS256/JWT key, also used for `/wru` HMACs and visitor hashes. If unset, `data/jwt.key` is created with mode `0600`. |
 | `ATS_DEFAULT_LOCALE` | `zh-CN` | Default UI locale. Supported: `zh-CN`, `en`. |
 | `ATS_TZ_OFFSET_MIN` | `480` | Local offset in minutes used for display and day buckets. |
@@ -75,8 +75,11 @@ See [Internationalization](i18n.md).
 
 - scheme (`https://`),
 - host,
-- optional path if the app is mounted under a prefix,
 - no trailing slash.
+
+A path prefix such as `https://example.com/ats` is not supported by the
+built-in router; mount ATS at the origin root or add an explicit reverse-proxy
+rewrite.
 
 If it does not match, login cookies and tracking snippets point at the wrong
 origin, and the `Origin` CSRF check rejects browser POSTs. This is the most

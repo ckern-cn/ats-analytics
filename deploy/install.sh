@@ -59,10 +59,13 @@ systemctl stop "$SERVICE" 2>/dev/null || true
 
 say "backup previous install"
 if [ -f "$DEST/bin/ats-capi" ]; then
-	tar -C "$(dirname "$DEST")" -czf "$DEST.bak-$STAMP.tgz" \
-		"$(basename "$DEST")" 2>/dev/null || true
+	if ! tar -C "$(dirname "$DEST")" -czf "$DEST.bak-$STAMP.tgz" \
+		"$(basename "$DEST")"; then
+		echo "backup failed; refusing to replace the existing install" >&2
+		exit 1
+	fi
 	# The archive contains the SQLite database and therefore visitor data.
-	chmod 600 "$DEST.bak-$STAMP.tgz" 2>/dev/null || true
+	chmod 600 "$DEST.bak-$STAMP.tgz"
 fi
 
 say "install files"
@@ -79,7 +82,8 @@ for f in README.md LICENSE NOTICE TRADEMARK.md THIRD_PARTY_NOTICES.md \
 	[ -f "$REPO/$f" ] && install -o ats -g ats -m 0644 "$REPO/$f" "$DEST/$f"
 done
 if [ -d "$REPO/docs" ]; then
-	cp -a "$REPO/docs" "$DEST/docs"
+	mkdir -p "$DEST/docs"
+	cp -a "$REPO/docs/." "$DEST/docs/"
 	chown -R ats:ats "$DEST/docs"
 fi
 chown -R ats:ats "$DEST"/public "$DEST"/tools
@@ -103,11 +107,25 @@ fi
 
 say "source tree"
 mkdir -p "$SRC_DIR"
+TMP_TAR=$(mktemp "${TMPDIR:-/tmp}/ats-src.XXXXXX")
+trap 'rm -f "$TMP_TAR"' EXIT INT TERM
 tar -C "$REPO" \
 	--exclude=ats-c/build --exclude=ats-c/bin --exclude=ats-c/data \
-	--exclude=ats-c/log --exclude=ats-c/src/schema_sql.h \
+	--exclude=ats-c/log --exclude=ats-c/backup \
+	--exclude=ats-c/src/schema_sql.h \
 	--exclude=ats-c/vendor/kore-4.2.3/kodev/kodev \
-	--exclude=.git -cf - . | tar -C "$SRC_DIR" -xf -
+	--exclude=.git --exclude=dist --exclude=backup \
+	--exclude='*.db' --exclude='*.db-wal' --exclude='*.db-shm' \
+	--exclude='*.env' --exclude=jwt.key --exclude='*.p12' \
+	--exclude='*.mmdb' \
+	-cf "$TMP_TAR" .
+tar -C "$SRC_DIR" -xf "$TMP_TAR"
+rm -f "$TMP_TAR"
+trap - EXIT INT TERM
+# The snapshot is built and installed by root; keep it root-owned so a
+# non-root deploy user cannot modify code that root later rebuilds.
+chown -R root:root "$SRC_DIR"
+chmod -R go-w "$SRC_DIR"
 echo "source installed in $SRC_DIR"
 
 say "environment file"

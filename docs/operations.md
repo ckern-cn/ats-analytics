@@ -43,15 +43,19 @@ Restore:
 
 ```sh
 systemctl stop ats-capi
-gunzip -c /webapps/ats-c/backup/ats-YYYYmmdd-HHMMSS.db.gz \
-    > /webapps/ats-c/data/ats.db
+(umask 077; gunzip -c /webapps/ats-c/backup/ats-YYYYmmdd-HHMMSS.db.gz \
+    > /webapps/ats-c/data/ats.db)
 rm -f /webapps/ats-c/data/ats.db-wal /webapps/ats-c/data/ats.db-shm
 chown ats:ats /webapps/ats-c/data/ats.db
+chmod 600 /webapps/ats-c/data/ats.db
 systemctl start ats-capi
 ```
 
 Backups contain visitor data. Keep the directory private and consider encrypting
-off-site copies.
+off-site copies. Daily backups contain the SQLite database only. Production
+installs normally keep `ATS_JWT_KEY` in `/etc/ats-capi.env`; back that file up
+too. If you run with `ATS_JWT_KEY` unset, also back up `data/jwt.key`, otherwise
+restoring the database changes visitor identifiers and invalidates sessions.
 
 ## GeoIP updates
 
@@ -93,12 +97,12 @@ If you use a VPN or Cloudflare Access, put the admin routes behind it instead.
 Upgrade:
 
 ```sh
-cd /opt/ats-src
-# If /opt/ats-src is a git checkout:
-git pull
-# Otherwise re-extract the source or release tarball into /opt/ats-src.
+cd /path/to/ats-analytics   # a checkout or an extracted release tarball
 sudo deploy/install.sh
 ```
+
+`/opt/ats-src` is a root-owned snapshot installed by the script, not a git
+checkout; do not run upgrades from there.
 
 The install script backs up the current `/webapps/ats-c` before replacing it.
 

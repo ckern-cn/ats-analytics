@@ -30,19 +30,28 @@ in, or required by, the project.
 
 ### Flag SVG assets
 
-- Location: `public/res/flags/*.svg`
-- The files use the circular flag style of the **circle-flags** project and are
-  believed to be MIT-licensed. If you replace or regenerate them, update this
-  notice with the actual source and license.
+- Location: `public/res/flags/*.svg` (246 country/region flags)
+- Source: **HatScripts/circle-flags**, `gh-pages` branch, commit
+  `98574d233dd251130dbe8ebc73468f0a5568ace4` (2024-12-09).
+  The 246 files are byte-identical to `flags/*.svg` at that commit.
+- Source URL at that commit:
+  https://github.com/HatScripts/circle-flags/tree/98574d233dd251130dbe8ebc73468f0a5568ace4/flags
+- License: MIT, Copyright (c) 2024 HatScripts. The full text is in
+  `LICENSES/circle-flags-MIT.txt`.
 - Upstream: https://github.com/HatScripts/circle-flags
 
-### Globe icon
+`public/res/flags/unknown.svg` is a self-made ATS globe icon, not part of
+circle-flags.
 
-- Location: `public/res/globe.svg`
-- The original source and license of this generic globe asset are not recorded
-  in this repository. Replace it with your own asset, or document its source,
-  before publishing a fork. The ATS logo/favicon are brand assets covered by
-  `NOTICE` and `TRADEMARK.md`, not third-party assets.
+### Globe / unknown icon
+
+- Location: `public/res/globe.svg` and `public/res/flags/unknown.svg`
+- Original ATS rendering generated for this project from **Natural Earth
+  1:110m land** (public domain) with `d3-geo`/`world-atlas`; the SVG path is
+  the project's own projection, not copied third-party artwork.
+- Natural Earth data: https://www.naturalearthdata.com/ (public domain).
+- Licensed under the project's MIT license. The ATS logo/favicon are brand
+  assets covered by `NOTICE` and `TRADEMARK.md`, not third-party assets.
 
 ## Ported / derived code
 

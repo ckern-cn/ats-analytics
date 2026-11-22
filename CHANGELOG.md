@@ -6,6 +6,44 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Changed
+
+- The nginx deployment config now serves only `ats.ckern.cn`. It no longer
+  claims or redirects the `ckern.cn`/`www.ckern.cn` apex, which belongs to the
+  separate ckern studio homepage project.
+- The dashboard topbar uses the ATS app badge (`icon.svg`) instead of the
+  transparent mark, so the small icon keeps its brand background.
+- Replaced the unknown/globe asset with a circular world-map silhouette
+  generated from Natural Earth 110m public-domain data. The map is slightly
+  enlarged and shifted left, with Antarctica and the Arctic cap removed.
+  A mild vertical scale reduces the excessive top/bottom whitespace of the
+  flat map inside the circular frame, and the map is nudged slightly left and
+  down for visual balance. Flag/globe URLs are versioned with
+  `ATS_ASSET_VERSION`.
+- Confirmed the 246 country/region flag SVGs are byte-identical to
+  `HatScripts/circle-flags` commit `98574d2` (MIT); added the upstream license
+  and documented the pinned commit in `THIRD_PARTY_NOTICES.md`.
+
+### Security
+
+- Reject CR/LF in redirect targets and validate the login `ref` path. A
+  crafted login redirect fragment could otherwise inject arbitrary response
+  headers through Kore's verbatim `Location` header.
+- Apply the same Origin/Fetch Metadata check to logout that the other
+  state-changing admin POSTs use.
+
+### Fixed
+
+- Admin form posts from embedded or sandboxed browsers that send
+  `Origin: null` together with `Sec-Fetch-Site: same-origin` are no longer
+  rejected as cross-site. A non-null Origin still has to match
+  `ATS_BASE_URL`; cross-site requests and null origins without Fetch Metadata
+  are still rejected.
+- The dashboard brand icon now has explicit 22×22 dimensions, and the admin
+  CSS/JS URLs are versioned with a short cache lifetime. A stale cached
+  stylesheet can no longer render the 512px SVG at full size in the top-left
+  corner.
+
 ### Planned
 
 - More locales and translation tooling.
