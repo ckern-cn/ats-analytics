@@ -207,7 +207,14 @@ a:hover { text-decoration: underline; }
 .toplist .n { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .toplist .track { height: 3px; background: var(--line); border-radius: 2px; margin-top: 5px; overflow: hidden; }
 .toplist .fill { height: 100%; background: var(--accent); border-radius: 2px; }
-.toplist img.flag { width: 16px; height: 11px; object-fit: cover; vertical-align: -1px; margin-right: 5px; }
+img.flag {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: -3px;
+  margin-right: 5px;
+}
 
 table.visits { width: 100%; border-collapse: collapse; font-size: 13px; }
 table.visits th, table.visits td {

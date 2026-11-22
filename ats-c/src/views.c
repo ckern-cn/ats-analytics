@@ -16,7 +16,7 @@
 #include "views.h"
 
 /* Bump when /res/css/ats.css or /res/js/sha256.min.js changes. */
-#define ATS_ASSET_VERSION "20261130c"
+#define ATS_ASSET_VERSION "20261130d"
 
 static void	pager_nav(struct ats_sb *, struct http_request *,
 		    enum ats_locale, int, int);
@@ -131,12 +131,12 @@ view_js_res_pv(struct ats_sb *sb, enum ats_locale locale,
 	    "/res/'+(code==='globe'?'globe.svg?v=" ATS_ASSET_VERSION
 	    "':'flags/'+code+'.svg?v=" ATS_ASSET_VERSION "');"
 	    "img.alt='';img.loading='lazy';"
-	    "img.style.cssText='width:18px;height:12px;object-fit:cover;"
-	    "border-radius:1px;';"
+	    "img.style.cssText='width:18px;height:18px;object-fit:cover;"
+	    "border-radius:50%;';"
 	    "var txt=document.createElement('span');"
 	    "txt.textContent=label+' '+count;"
 	    "if(totalRow){txt.style.fontWeight='700';txt.style.fontSize='15px';"
-	    "img.style.width='22px';img.style.height='15px';}"
+	    "img.style.width='22px';img.style.height='22px';}"
 	    "el.appendChild(img);el.appendChild(txt);box.appendChild(el);}"
 	    "add('globe',total,'");
 	ats_sb_js(sb, ats_i18n(locale, I18N_PV_VIEWS));

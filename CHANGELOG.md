@@ -36,6 +36,10 @@ All notable changes to this project are documented here. The format is based on
 
 - The login page no longer adds the studio footer to a full `100vh`, which
   caused an unnecessary vertical scrollbar on desktop.
+- Country flags in the recent-visits table now use the shared 16×16 circular
+  style instead of rendering at the SVG's intrinsic 512px size.
+- Country flags in the 30-day breakdown and PV badge are now circular; the
+  previous 16×11 / 18×12 boxes cropped the circular flag assets.
 - Admin form posts from embedded or sandboxed browsers that send
   `Origin: null` together with `Sec-Fetch-Site: same-origin` are no longer
   rejected as cross-site. A non-null Origin still has to match
