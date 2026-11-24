@@ -218,7 +218,6 @@ img.flag {
 
 table.visits {
   width: 100%;
-  table-layout: fixed;
   border-collapse: collapse;
   font-size: 13px;
 }
@@ -235,22 +234,19 @@ table.visits th {
   color: var(--muted);
   background: #fafbfc;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 table.visits td { overflow-wrap: anywhere; }
-table.visits th:nth-child(1), table.visits td:nth-child(1) { width: 24%; }
-table.visits th:nth-child(2), table.visits td:nth-child(2) { width: 17%; }
-table.visits th:nth-child(3), table.visits td:nth-child(3) { width: 12%; }
-table.visits th:nth-child(4), table.visits td:nth-child(4) { width: 12%; }
-table.visits th:nth-child(5), table.visits td:nth-child(5) { width: 8%; }
-table.visits th:nth-child(6), table.visits td:nth-child(6) { width: 9%; }
-table.visits th:nth-child(7), table.visits td:nth-child(7) { width: 18%; }
-table.visits td.ip {
+table.visits td:nth-child(1) { max-width: min(190px, 20vw); }
+table.visits td:nth-child(2) { max-width: min(135px, 13vw); }
+table.visits td:nth-child(3) {
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+table.visits td:nth-child(5),
+table.visits td:nth-child(6),
+table.visits td:nth-child(7) { white-space: nowrap; }
 table.visits .ell {
   display: block;
   overflow: hidden;
@@ -360,10 +356,13 @@ table.visits tbody tr:hover { background: #fafcfb; }
   .sidebar { position: static; }
   .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-@media (max-width: 760px) {
-  table.visits th, table.visits td { padding: 8px 6px; }
+@media (max-width: 1180px) {
   table.visits th:nth-child(5), table.visits td:nth-child(5),
   table.visits th:nth-child(6), table.visits td:nth-child(6) { display: none; }
+}
+@media (max-width: 760px) {
+  table.visits th, table.visits td { padding: 8px 6px; }
+  table.visits td:nth-child(7) { white-space: normal; }
 }
 @media (max-width: 620px) {
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -375,8 +374,4 @@ table.visits tbody tr:hover { background: #fafcfb; }
   }
   .topbar .wrap { flex-wrap: wrap; }
   table.visits th:nth-child(3), table.visits td:nth-child(3) { display: none; }
-  table.visits th:nth-child(1), table.visits td:nth-child(1) { width: 22%; }
-  table.visits th:nth-child(2), table.visits td:nth-child(2) { width: 16%; }
-  table.visits th:nth-child(4), table.visits td:nth-child(4) { width: 18%; }
-  table.visits th:nth-child(7), table.visits td:nth-child(7) { width: 18%; }
 }

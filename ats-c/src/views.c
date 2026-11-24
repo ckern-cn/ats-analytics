@@ -16,7 +16,7 @@
 #include "views.h"
 
 /* Bump when /res/css/ats.css or /res/js/sha256.min.js changes. */
-#define ATS_ASSET_VERSION "20261130e"
+#define ATS_ASSET_VERSION "20261130f"
 
 static void	pager_nav(struct ats_sb *, struct http_request *,
 		    enum ats_locale, int, int);

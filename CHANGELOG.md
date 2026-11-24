@@ -38,10 +38,11 @@ All notable changes to this project are documented here. The format is based on
   caused an unnecessary vertical scrollbar on desktop.
 - Country flags in the recent-visits table now use the shared 16×16 circular
   style instead of rendering at the SVG's intrinsic 512px size.
-- The recent-visits table now uses fixed column widths and truncates the page
-  and referrer columns, so long URLs no longer force a horizontal scrollbar.
-  The IP column is ellipsized on desktop and hidden on phones; browser and OS
-  columns are hidden on narrow screens so the remaining data stays readable.
+- The recent-visits table now caps the page and referrer columns and lets the
+  IP, country, browser, OS and time columns size to their content, so long
+  URLs no longer force a horizontal scrollbar. The IP column is ellipsized on
+  desktop and hidden on phones; browser and OS columns are hidden on narrow
+  screens so the remaining data stays readable.
 - Country flags in the 30-day breakdown and PV badge are now circular; the
   previous 16×11 / 18×12 boxes cropped the circular flag assets.
 - Admin form posts from embedded or sandboxed browsers that send
