@@ -216,7 +216,12 @@ img.flag {
   margin-right: 5px;
 }
 
-table.visits { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.visits {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 13px;
+}
 table.visits th, table.visits td {
   text-align: left;
   padding: 9px 10px;
@@ -230,9 +235,22 @@ table.visits th {
   color: var(--muted);
   background: #fafbfc;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-table.visits td { max-width: 320px; }
-table.visits td.url { max-width: 380px; }
+table.visits td { overflow-wrap: anywhere; }
+table.visits th:nth-child(1), table.visits td:nth-child(1) { width: 24%; }
+table.visits th:nth-child(2), table.visits td:nth-child(2) { width: 17%; }
+table.visits th:nth-child(3), table.visits td:nth-child(3) { width: 12%; }
+table.visits th:nth-child(4), table.visits td:nth-child(4) { width: 12%; }
+table.visits th:nth-child(5), table.visits td:nth-child(5) { width: 8%; }
+table.visits th:nth-child(6), table.visits td:nth-child(6) { width: 9%; }
+table.visits th:nth-child(7), table.visits td:nth-child(7) { width: 18%; }
+table.visits td.ip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 table.visits .ell {
   display: block;
   overflow: hidden;
@@ -342,6 +360,11 @@ table.visits tbody tr:hover { background: #fafcfb; }
   .sidebar { position: static; }
   .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+@media (max-width: 760px) {
+  table.visits th, table.visits td { padding: 8px 6px; }
+  table.visits th:nth-child(5), table.visits td:nth-child(5),
+  table.visits th:nth-child(6), table.visits td:nth-child(6) { display: none; }
+}
 @media (max-width: 620px) {
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wrap { padding: 0 14px; }
@@ -351,6 +374,9 @@ table.visits tbody tr:hover { background: #fafcfb; }
     min-height: calc(100svh - 42px);
   }
   .topbar .wrap { flex-wrap: wrap; }
-  table.visits th:nth-child(5), table.visits td:nth-child(5),
-  table.visits th:nth-child(6), table.visits td:nth-child(6) { display: none; }
+  table.visits th:nth-child(3), table.visits td:nth-child(3) { display: none; }
+  table.visits th:nth-child(1), table.visits td:nth-child(1) { width: 22%; }
+  table.visits th:nth-child(2), table.visits td:nth-child(2) { width: 16%; }
+  table.visits th:nth-child(4), table.visits td:nth-child(4) { width: 18%; }
+  table.visits th:nth-child(7), table.visits td:nth-child(7) { width: 18%; }
 }

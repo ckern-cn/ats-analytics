@@ -16,7 +16,7 @@
 #include "views.h"
 
 /* Bump when /res/css/ats.css or /res/js/sha256.min.js changes. */
-#define ATS_ASSET_VERSION "20261130d"
+#define ATS_ASSET_VERSION "20261130e"
 
 static void	pager_nav(struct ats_sb *, struct http_request *,
 		    enum ats_locale, int, int);
@@ -931,7 +931,9 @@ view_data_view(struct ats_sb *sb, struct http_request *req,
 			ats_sb_html(sb, d->rows[i].referring_url);
 			ats_sb_adds(sb, "\">");
 			ats_sb_html(sb, d->rows[i].referring_url);
-			ats_sb_adds(sb, "</span></td><td class=\"mono\">");
+			ats_sb_adds(sb, "</span></td><td class=\"mono ip\" title=\"");
+			ats_sb_html(sb, d->rows[i].visitor_ip);
+			ats_sb_adds(sb, "\">");
 			ats_sb_html(sb, d->rows[i].visitor_ip);
 			ats_sb_adds(sb, "</td><td>");
 			if (country_ok(d->rows[i].country)) {
